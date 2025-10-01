@@ -72,3 +72,11 @@ class TestEmbeddingModelConfig:
         assert config.embedding_length == 768
         assert config.max_tokens == 512
         del config
+
+    def test_default_parameters(self):
+        config = wbc.EmbeddingModelConfig()
+        assert config.model_name == "embeddinggemma"
+        assert config.hf_model_id == "google/embeddinggemma-300m"
+        assert config.embedding_length == 768
+        assert config.max_tokens == 2048
+        del config

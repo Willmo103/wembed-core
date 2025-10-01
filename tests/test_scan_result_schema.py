@@ -20,7 +20,7 @@ class TestScanResultsSchema:
             "id": "scan123",
             "root_path": "/path/to/scan",
             "scan_type": "full",
-            "name": "Repo",
+            "scan_name": "Repo",
             "files": ["/path/to/scan/file1.txt", "/path/to/scan/file2.txt"],
             "scan_start": datetime.now(tz=timezone.utc),
             "scan_end": datetime.now(tz=timezone.utc) + timedelta(minutes=5),
@@ -35,7 +35,7 @@ class TestScanResultsSchema:
         assert scan_result.id == scan_data["id"]
         assert scan_result.root_path == scan_data["root_path"]
         assert scan_result.scan_type == scan_data["scan_type"]
-        assert scan_result.name == scan_data["name"]
+        assert scan_result.scan_name == scan_data["scan_name"]
         assert scan_result.files == scan_data["files"]
         assert scan_result.scan_start == scan_data["scan_start"]
         assert scan_result.scan_end == scan_data["scan_end"]
@@ -82,7 +82,7 @@ class TestScanResultsSchema:
         minimal_data = ScanResultSchema(
             id="scan123",
             root_path="/path/to/scan",
-            name="Repo",
+            scan_name="Repo",
             scan_type="full",
             scan_start=datetime.now(tz=timezone.utc),
             scan_end=None,
@@ -105,6 +105,34 @@ class TestScanResultsSchema:
         assert scan_result.duration is None
         assert scan_result.options is None
 
+    def test_total_files_computation(self):
+        """Test the computed field total_files."""
+        scan_data_with_files = {
+            "id": "scan123",
+            "root_path": "/path/to/scan",
+            "scan_type": "full",
+            "scan_name": "Repo",
+            "files": ["/path/to/scan/file1.txt", "/path/to/scan/file2.txt"],
+            "scan_start": datetime.now(tz=timezone.utc),
+            "user": "testuser",
+            "host": "testhost",
+        }
+        scan_result_with_files = ScanResultSchema(**scan_data_with_files)
+        assert scan_result_with_files.total_files == 2
+
+        scan_data_no_files = {
+            "id": "scan124",
+            "root_path": "/path/to/scan",
+            "scan_type": "incremental",
+            "scan_name": "Repo Incremental",
+            "files": None,
+            "scan_start": datetime.now(tz=timezone.utc),
+            "user": "testuser",
+            "host": "testhost",
+        }
+        scan_result_no_files = ScanResultSchema(**scan_data_no_files)
+        assert scan_result_no_files.total_files == 0
+
 
 class TestScanResultList:
     """Test suite for ScanResultList Pydantic model."""
@@ -117,7 +145,7 @@ class TestScanResultList:
             "id": "scan1",
             "root_path": "/path/to/scan1",
             "scan_type": "full",
-            "name": "Scan 1",
+            "scan_name": "Scan 1",
             "files": ["/path/to/scan1/file1.txt"],
             "scan_start": datetime.now(timezone.utc) - timedelta(minutes=10),
             "scan_end": datetime.now(timezone.utc) - timedelta(minutes=5),
@@ -130,7 +158,7 @@ class TestScanResultList:
             "id": "scan2",
             "root_path": "/path/to/scan2",
             "scan_type": "incremental",
-            "name": "Scan 2",
+            "scan_name": "Scan 2",
             "files": ["/path/to/scan2/file2.txt"],
             "scan_start": datetime.now(timezone.utc) - timedelta(minutes=5),
             "scan_end": datetime.now(timezone.utc),
@@ -164,7 +192,7 @@ class TestScanResultList:
             "id": "scan1",
             "root_path": "/path/to/scan1",
             "scan_type": "full",
-            "name": "Scan 1",
+            "scan_name": "Scan 1",
             "files": ["/path/to/scan1/file1.txt"],
             "scan_start": datetime.now(timezone.utc) - timedelta(minutes=10),
             "scan_end": datetime.now(timezone.utc) - timedelta(minutes=5),
@@ -183,3 +211,25 @@ class TestScanResultList:
         results = list(result_generator)
         assert len(results) == 1
         assert results[0].id == "scan1"
+
+    def test_add_result(self):
+        """Test that add_result correctly adds a ScanResultSchema to the list."""
+        scan_list = ScanResultList(results=[])
+        scan_data = {
+            "id": "scan1",
+            "root_path": "/path/to/scan1",
+            "scan_type": "full",
+            "scan_name": "Scan 1",
+            "files": ["/path/to/scan1/file1.txt"],
+            "scan_start": datetime.now(timezone.utc) - timedelta(minutes=10),
+            "scan_end": datetime.now(timezone.utc) - timedelta(minutes=5),
+            "duration": 300.0,
+            "options": {"recursive": True},
+            "user": "user1",
+            "host": "host1",
+        }
+        scan_result = ScanResultSchema(**scan_data)
+        scan_list.add_result(scan_result)
+
+        assert len(scan_list.results) == 1
+        assert scan_list.results[0].id == "scan1"

@@ -6,7 +6,7 @@ SQLAlchemy model for file records in the 'host_files' table.
 from datetime import datetime
 from typing import List, Optional
 
-from sqlalchemy import JSON, DateTime, Integer, String
+from sqlalchemy import JSON, DateTime, Float, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from ..database import AppBase as Base
@@ -43,7 +43,7 @@ class ScanResultRecord(Base):
     scan_end: Mapped[Optional[datetime]] = mapped_column(
         DateTime(timezone=True), nullable=True
     )
-    duration: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    duration: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
     options: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
     user: Mapped[str] = mapped_column(String, nullable=False)
     host: Mapped[str] = mapped_column(String, nullable=False)

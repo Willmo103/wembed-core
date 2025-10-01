@@ -7,7 +7,7 @@ from pydantic import BaseModel, computed_field
 class ScanResultSchema(BaseModel):
     id: str
     root_path: str
-    name: str
+    scan_name: str
     scan_type: str
     files: Optional[List[str]] = None
     scan_start: datetime = datetime.now(tz=timezone.utc)

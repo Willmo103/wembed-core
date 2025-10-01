@@ -8,9 +8,9 @@ from datetime import datetime, timedelta, timezone
 import pytest
 from pydantic import ValidationError
 
-from wembed_core.schemas.indexing_result_schemas import (
-    IndexingResultList,
+from wembed_core.schemas import (
     IndexingResultSchema,
+    IndexingResultsListSchema,
 )
 
 
@@ -142,7 +142,7 @@ class TestScanResultList:
 
     def test_add_and_iterate_results(self):
         """Test adding scan results and iterating over them."""
-        scan_list = IndexingResultList(results=[])
+        scan_list = IndexingResultsListSchema(results=[])
 
         scan_data_1 = {
             "id": "scan1",
@@ -184,13 +184,13 @@ class TestScanResultList:
 
     def test_iterate_empty_list(self):
         """Test iterating over an empty ScanResultList."""
-        scan_list = IndexingResultList(results=[])
+        scan_list = IndexingResultsListSchema(results=[])
         results = list(scan_list.iter_results())
         assert len(results) == 0
 
     def test_iter_results_generator(self):
         """Test that iter_results returns a generator."""
-        scan_list = IndexingResultList(results=[])
+        scan_list = IndexingResultsListSchema(results=[])
         scan_data = {
             "id": "scan1",
             "root_path": "/path/to/scan1",
@@ -217,7 +217,7 @@ class TestScanResultList:
 
     def test_add_result(self):
         """Test that add_result correctly adds a ScanResultSchema to the list."""
-        scan_list = IndexingResultList(results=[])
+        scan_list = IndexingResultsListSchema(results=[])
         scan_data = {
             "id": "scan1",
             "root_path": "/path/to/scan1",

@@ -9,7 +9,7 @@ import pytest
 
 from wembed_core.config import AppConfig
 from wembed_core.database import AppBase, DatabaseService
-from wembed_core.models.indexing_results import FileIndexResults
+from wembed_core.models.indexing_results import FileIndexingResults
 
 
 class TestScanResultRecord:
@@ -36,7 +36,7 @@ class TestScanResultRecord:
         session = next(session_gen)
 
         # Create a new FileIndexResult
-        scan_result = FileIndexResults(
+        scan_result = FileIndexingResults(
             id="scan123",
             root_path="/path/to/scan",
             scan_type="full",
@@ -54,7 +54,7 @@ class TestScanResultRecord:
         session.commit()
 
         # Retrieve the FileIndexResult
-        retrieved = session.query(FileIndexResults).filter_by(id="scan123").first()
+        retrieved = session.query(FileIndexingResults).filter_by(id="scan123").first()
 
         assert retrieved is not None
         assert retrieved.id == "scan123"
@@ -80,7 +80,7 @@ class TestScanResultRecord:
         session = next(session_gen)
 
         # Create a new FileIndexResult with nullable fields set to None
-        scan_result = FileIndexResults(
+        scan_result = FileIndexingResults(
             id="scan124",
             root_path="/path/to/scan",
             scan_type="incremental",
@@ -98,7 +98,7 @@ class TestScanResultRecord:
         session.commit()
 
         # Retrieve the FileIndexResult
-        retrieved = session.query(FileIndexResults).filter_by(id="scan124").first()
+        retrieved = session.query(FileIndexingResults).filter_by(id="scan124").first()
 
         assert retrieved is not None
         assert retrieved.id == "scan124"

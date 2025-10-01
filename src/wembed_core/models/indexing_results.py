@@ -12,7 +12,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from ..database import AppBase as Base
 
 
-class FileIndexResults(Base):
+class FileIndexingResults(Base):
     """
     SQLAlchemy model for scan results.
 

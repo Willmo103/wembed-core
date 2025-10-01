@@ -28,7 +28,7 @@ class IndexingResultSchema(BaseModel):
         from_attributes = True
 
 
-class IndexingResultList(BaseModel):
+class IndexingResultsListSchema(BaseModel):
     results: List[IndexingResultSchema]
 
     def add_result(self, result: IndexingResultSchema) -> None:

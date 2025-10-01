@@ -10,8 +10,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from wembed_core.config import AppConfig
-from wembed_core.database import AppBase, DatabaseService
-from wembed_core.models.indexed_files import IndexedFiles
+from wembed_core.database import DatabaseService
+from wembed_core.models import IndexedFiles
 
 
 class TestDatabaseAndFileRecord:

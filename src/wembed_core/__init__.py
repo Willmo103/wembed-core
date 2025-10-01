@@ -1,2 +1,1 @@
-def hello() -> str:
-    return "Hello from wembed-core!"
+from .config import AppConfig, EmbeddingModelConfig

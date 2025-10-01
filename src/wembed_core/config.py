@@ -125,6 +125,7 @@ class EmbeddingModelConfig(BaseModel):
             max_tokens=2048,
         )
 
+__all__ = ["AppConfig", "EmbeddingModelConfig"]
 
 if __name__ == "__main__":
     env["DEV"] = "true"  # For testing purposes

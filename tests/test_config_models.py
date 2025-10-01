@@ -1,9 +1,8 @@
+from os import environ as env
 from pathlib import Path
 
-import pytest
-
 import wembed_core as wbc
-from os import environ as env
+
 
 class TestAppConfig:
 
@@ -24,11 +23,20 @@ class TestAppConfig:
         assert config.logs_dir.is_dir()
         del config
 
-
     def test_environment_dev(self):
         env["DEV"] = "true"
         config = wbc.AppConfig()
         assert config.environment == "development"
+        assert config.app_data == Path(__file__).parent.parent / "data"
+        assert config.app_data.name == "data"
+        assert config.app_data.is_dir()
+        assert config.logs_dir == config.app_data / "logs"
+        assert config.logs_dir.name == "logs"
+        assert config.logs_dir.is_dir()
+        assert config.sqlalchemy_uri == "sqlite:///" + str(
+            config.app_data / "wembed.db"
+        )
+        del config
         del env["DEV"]
 
     def test_environment_dev_values(self):
@@ -49,3 +57,18 @@ class TestAppConfig:
             del env["DEV"]
             del config
 
+
+class TestEmbeddingModelConfig:
+
+    def test_setting_parameters(self):
+        config = wbc.EmbeddingModelConfig(
+            model_name="test_model",
+            hf_model_id="test/hf-model-id",
+            embedding_length=768,
+            max_tokens=512,
+        )
+        assert config.model_name == "test_model"
+        assert config.hf_model_id == "test/hf-model-id"
+        assert config.embedding_length == 768
+        assert config.max_tokens == 512
+        del config

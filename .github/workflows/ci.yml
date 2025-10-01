@@ -1,4 +1,4 @@
-name: workflow.yml
+name: ci.yml
 on:
   push:
     branches: [ "main", "dev-main" ]

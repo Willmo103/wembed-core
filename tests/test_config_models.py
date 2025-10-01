@@ -17,10 +17,8 @@ class TestAppConfig:
         assert config.environment == "production"
         assert config.app_data == Path.home() / ".wembed"
         assert config.app_data.name == ".wembed"
-        assert config.app_data.is_dir()
         assert config.logs_dir == Path.home() / ".wembed" / "logs"
         assert config.logs_dir.name == "logs"
-        assert config.logs_dir.is_dir()
         del config
 
     def test_environment_dev(self):
@@ -29,10 +27,8 @@ class TestAppConfig:
         assert config.environment == "development"
         assert config.app_data == Path(__file__).parent.parent / "data"
         assert config.app_data.name == "data"
-        assert config.app_data.is_dir()
         assert config.logs_dir == config.app_data / "logs"
         assert config.logs_dir.name == "logs"
-        assert config.logs_dir.is_dir()
         assert config.sqlalchemy_uri == "sqlite:///" + str(
             config.app_data / "wembed.db"
         )

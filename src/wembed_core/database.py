@@ -1,9 +1,10 @@
 """
 SQLAlchemy setup and database service for the application.
 """
+
 from typing import Generator
 
-from sqlalchemy.orm import declarative_base, Session
+from sqlalchemy.orm import Session, declarative_base
 
 from .config import AppConfig
 
@@ -21,7 +22,8 @@ class DatabaseService:
         init_db(): Initializes the database connection and creates tables.
         get_db(): Provides a database session for use in application code.
     """
-    _is_initialized = False
+
+    is_initialized = False
 
     def __init__(self, config: AppConfig):
         """
@@ -39,7 +41,7 @@ class DatabaseService:
         Initialize the database connection and create tables if they do not exist.
         This method should be called once during application startup.
         """
-        if self._is_initialized:
+        if self.is_initialized:
             return
         from sqlalchemy import create_engine
         from sqlalchemy.orm import sessionmaker
@@ -49,7 +51,7 @@ class DatabaseService:
             autocommit=False, autoflush=False, bind=self.engine
         )
         AppBase.metadata.create_all(bind=self.engine)
-        self._is_initialized = True
+        self.is_initialized = True
 
     def get_db(self) -> "Generator[Session, None, None]":
         """

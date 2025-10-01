@@ -1,22 +1,26 @@
 """
+source: wembed_core/models/file_record.py
 SQLAlchemy model for file records in the 'host_files' table.
 """
-from ..database import AppBase as Base
-from sqlalchemy import (
-    String,
-    Integer,
-    DateTime,
-    LargeBinary,
-    Text,
-)
-from sqlalchemy.orm import Mapped, mapped_column
+
 from datetime import datetime
 from typing import Optional
 
+from sqlalchemy import (
+    DateTime,
+    Integer,
+    LargeBinary,
+    String,
+    Text,
+)
+from sqlalchemy.orm import Mapped, mapped_column
 
-class HostFileRecord(Base):
+from ..database import AppBase as Base
+
+
+class HostFilesRecord(Base):
     """
-    SQLAlchemy model for the 'dl_files' table, representing file records.
+    SQLAlchemy model for the 'host_files' table, representing file records.
 
     Attributes:
         id (str): Unique identifier for the file (primary key).
@@ -37,13 +41,13 @@ class HostFileRecord(Base):
         size (int): Size of the file in bytes.
         content (bytes, optional): Binary content of the file.
         content_text (str): Text content of the file.
-        markdown (str, optional): Markdown representation of the file content.
         ctime_iso (datetime): Creation time of the file in ISO format.
         mtime_iso (datetime): Last modification time of the file in ISO format.
         line_count (int): Number of lines in the file.
         uri (str): URI of the file.
         mimetype (str): MIME type of the file.
         created_at (datetime): Timestamp when the record was created.
+        updated_at (datetime): Timestamp when the record was last updated.
     """
 
     __tablename__ = "host_files"
@@ -66,7 +70,6 @@ class HostFileRecord(Base):
     size: Mapped[int] = mapped_column(Integer, nullable=False)
     content: Mapped[Optional[bytes]] = mapped_column(LargeBinary, nullable=True)
     content_text: Mapped[str] = mapped_column(Text, nullable=False)
-    markdown: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     ctime_iso: Mapped[datetime] = mapped_column(DateTime, nullable=False)
     mtime_iso: Mapped[datetime] = mapped_column(DateTime, nullable=False)
     line_count: Mapped[int] = mapped_column(Integer, nullable=False)
@@ -74,4 +77,7 @@ class HostFileRecord(Base):
     mimetype: Mapped[str] = mapped_column(String, nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime, nullable=False, default="now()"
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime, nullable=False, default="now()", onupdate="now()"
     )

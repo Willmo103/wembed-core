@@ -4,15 +4,9 @@ SQLAlchemy model for file records in the 'host_files' table.
 """
 
 from datetime import datetime
-from typing import Optional
+from typing import List, Optional
 
-from sqlalchemy import (
-    DateTime,
-    Integer,
-    LargeBinary,
-    String,
-    Text,
-)
+from sqlalchemy import JSON, DateTime, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from ..database import AppBase as Base

@@ -6,7 +6,7 @@ SQLAlchemy model for file records in the 'host_files' table.
 from datetime import datetime
 from typing import List, Optional
 
-from sqlalchemy import JSON, DateTime, Float, Integer, String
+from sqlalchemy import JSON, DateTime, Float, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from ..database import AppBase as Base

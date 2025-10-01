@@ -1,1 +1,1 @@
-from .file_record import HostFilesRecord  # noqa: F401
+from .indexed_files import IndexedFiles  # noqa: F401

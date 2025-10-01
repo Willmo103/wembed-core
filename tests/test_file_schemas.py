@@ -8,7 +8,7 @@ from datetime import datetime, timedelta, timezone
 import pytest
 from pydantic import ValidationError
 
-from wembed_core.schemas.file_schemas import HostFileSchema
+from wembed_core.schemas.indexed_file_schema import IndexedFileSchema
 
 
 class TestHostFileSchema:
@@ -16,7 +16,7 @@ class TestHostFileSchema:
 
     def test_schema_creation_with_required_fields(self):
         """Test creating a HostFileSchema with only required fields."""
-        schema = HostFileSchema(
+        schema = IndexedFileSchema(
             id="test-file-001",
             source_type="git",
             source_root="/home/user/project",
@@ -42,7 +42,7 @@ class TestHostFileSchema:
         """Test creating a HostFileSchema with all fields populated."""
         now = datetime.now(timezone.utc)
 
-        schema = HostFileSchema(
+        schema = IndexedFileSchema(
             id="full-file-001",
             version=2,
             source_type="local",
@@ -81,7 +81,7 @@ class TestHostFileSchema:
 
     def test_bump_version_method(self):
         """Test that bump_version increments version and updates timestamp."""
-        schema = HostFileSchema(
+        schema = IndexedFileSchema(
             id="version-test",
             source_type="git",
             source_root="/test",
@@ -110,7 +110,7 @@ class TestHostFileSchema:
         """Test that missing required fields raise ValidationError."""
         # Missing 'id' field
         with pytest.raises(ValidationError) as exc_info:
-            HostFileSchema(
+            IndexedFileSchema(
                 source_type="git", source_root="/test", source_name="test-repo"
             )
 
@@ -119,18 +119,20 @@ class TestHostFileSchema:
 
         # Missing 'source_type' field
         with pytest.raises(ValidationError) as exc_info:
-            HostFileSchema(id="test-001", source_root="/test", source_name="test-repo")
+            IndexedFileSchema(
+                id="test-001", source_root="/test", source_name="test-repo"
+            )
 
         errors = exc_info.value.errors()
         assert any(error["loc"] == ("source_type",) for error in errors)
 
     def test_schema_from_orm_compatibility(self):
         """Test that schema can be created from ORM model (from_attributes=True)."""
-        from wembed_core.models.file_record import HostFilesRecord
+        from wembed_core.models.indexed_files import IndexedFiles
 
         # Create a mock ORM object
         now = datetime.now(timezone.utc)
-        orm_record = HostFilesRecord(
+        orm_record = IndexedFiles(
             id="orm-test-001",
             version=1,
             source_type="git",
@@ -158,7 +160,7 @@ class TestHostFileSchema:
         )
 
         # Create schema from ORM model
-        schema = HostFileSchema.model_validate(orm_record)
+        schema = IndexedFileSchema.model_validate(orm_record)
 
         assert schema.id == "orm-test-001"
         assert schema.source_type == "git"
@@ -168,7 +170,7 @@ class TestHostFileSchema:
 
     def test_schema_serialization(self):
         """Test that schema can be serialized to dict and JSON."""
-        schema = HostFileSchema(
+        schema = IndexedFileSchema(
             id="serialize-test",
             source_type="local",
             source_root="/test",
@@ -190,6 +192,6 @@ class TestHostFileSchema:
         assert '"id":"serialize-test"' in schema_json
 
         # Verify we can deserialize back
-        deserialized = HostFileSchema.model_validate_json(schema_json)
+        deserialized = IndexedFileSchema.model_validate_json(schema_json)
         assert deserialized.id == schema.id
         assert deserialized.name == schema.name

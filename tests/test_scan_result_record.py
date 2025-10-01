@@ -9,7 +9,7 @@ import pytest
 
 from wembed_core.config import AppConfig
 from wembed_core.database import AppBase, DatabaseService
-from wembed_core.models.scan_result import ScanResultRecord
+from wembed_core.models.indexing_results import FileIndexResults
 
 
 class TestScanResultRecord:
@@ -27,7 +27,7 @@ class TestScanResultRecord:
         return config
 
     def test_scan_result_record_creation(self, config):
-        """Test creating and retrieving a ScanResultRecord."""
+        """Test creating and retrieving a FileIndexResult."""
         db_service = DatabaseService(config)
         db_service.init_db()
 
@@ -35,8 +35,8 @@ class TestScanResultRecord:
         session_gen = db_service.get_db()
         session = next(session_gen)
 
-        # Create a new ScanResultRecord
-        scan_result = ScanResultRecord(
+        # Create a new FileIndexResult
+        scan_result = FileIndexResults(
             id="scan123",
             root_path="/path/to/scan",
             scan_type="full",
@@ -53,8 +53,8 @@ class TestScanResultRecord:
         session.add(scan_result)
         session.commit()
 
-        # Retrieve the ScanResultRecord
-        retrieved = session.query(ScanResultRecord).filter_by(id="scan123").first()
+        # Retrieve the FileIndexResult
+        retrieved = session.query(FileIndexResults).filter_by(id="scan123").first()
 
         assert retrieved is not None
         assert retrieved.id == "scan123"
@@ -79,8 +79,8 @@ class TestScanResultRecord:
         session_gen = db_service.get_db()
         session = next(session_gen)
 
-        # Create a new ScanResultRecord with nullable fields set to None
-        scan_result = ScanResultRecord(
+        # Create a new FileIndexResult with nullable fields set to None
+        scan_result = FileIndexResults(
             id="scan124",
             root_path="/path/to/scan",
             scan_type="incremental",
@@ -97,8 +97,8 @@ class TestScanResultRecord:
         session.add(scan_result)
         session.commit()
 
-        # Retrieve the ScanResultRecord
-        retrieved = session.query(ScanResultRecord).filter_by(id="scan124").first()
+        # Retrieve the FileIndexResult
+        retrieved = session.query(FileIndexResults).filter_by(id="scan124").first()
 
         assert retrieved is not None
         assert retrieved.id == "scan124"

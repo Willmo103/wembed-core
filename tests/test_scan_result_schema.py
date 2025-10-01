@@ -8,7 +8,10 @@ from datetime import datetime, timedelta, timezone
 import pytest
 from pydantic import ValidationError
 
-from wembed_core.schemas.scan_result_schemas import ScanResultList, ScanResultSchema
+from wembed_core.schemas.indexing_result_schemas import (
+    IndexingResultList,
+    IndexingResultSchema,
+)
 
 
 class TestScanResultsSchema:
@@ -30,7 +33,7 @@ class TestScanResultsSchema:
             "host": "testhost",
         }
 
-        scan_result = ScanResultSchema(**scan_data)
+        scan_result = IndexingResultSchema(**scan_data)
 
         assert scan_result.id == scan_data["id"]
         assert scan_result.root_path == scan_data["root_path"]
@@ -57,7 +60,7 @@ class TestScanResultsSchema:
         }
 
         with pytest.raises(ValidationError) as exc_info:
-            ScanResultSchema(**incomplete_data)
+            IndexingResultSchema(**incomplete_data)
 
         errors = exc_info.value.errors()
         assert any(error for error in errors)
@@ -73,13 +76,13 @@ class TestScanResultsSchema:
             "host": "testhost",
         }
         with pytest.raises(ValidationError) as exc_info:
-            ScanResultSchema(**invalid_data)
+            IndexingResultSchema(**invalid_data)
         errors = exc_info.value.errors()
         assert any(error for error in errors)
 
     def test_optional_fields_with_none(self):
         """Test that optional fields can be omitted."""
-        minimal_data = ScanResultSchema(
+        minimal_data = IndexingResultSchema(
             id="scan123",
             root_path="/path/to/scan",
             scan_name="Repo",
@@ -92,7 +95,7 @@ class TestScanResultsSchema:
             host="testhost",
         ).model_dump()
 
-        scan_result = ScanResultSchema(**minimal_data)
+        scan_result = IndexingResultSchema(**minimal_data)
 
         assert scan_result.id == minimal_data["id"]
         assert scan_result.root_path == minimal_data["root_path"]
@@ -117,7 +120,7 @@ class TestScanResultsSchema:
             "user": "testuser",
             "host": "testhost",
         }
-        scan_result_with_files = ScanResultSchema(**scan_data_with_files)
+        scan_result_with_files = IndexingResultSchema(**scan_data_with_files)
         assert scan_result_with_files.total_files == 2
 
         scan_data_no_files = {
@@ -130,7 +133,7 @@ class TestScanResultsSchema:
             "user": "testuser",
             "host": "testhost",
         }
-        scan_result_no_files = ScanResultSchema(**scan_data_no_files)
+        scan_result_no_files = IndexingResultSchema(**scan_data_no_files)
         assert scan_result_no_files.total_files == 0
 
 
@@ -139,7 +142,7 @@ class TestScanResultList:
 
     def test_add_and_iterate_results(self):
         """Test adding scan results and iterating over them."""
-        scan_list = ScanResultList(results=[])
+        scan_list = IndexingResultList(results=[])
 
         scan_data_1 = {
             "id": "scan1",
@@ -168,8 +171,8 @@ class TestScanResultList:
             "host": "host2",
         }
 
-        scan_result_1 = ScanResultSchema(**scan_data_1)
-        scan_result_2 = ScanResultSchema(**scan_data_2)
+        scan_result_1 = IndexingResultSchema(**scan_data_1)
+        scan_result_2 = IndexingResultSchema(**scan_data_2)
 
         scan_list.add_result(scan_result_1)
         scan_list.add_result(scan_result_2)
@@ -181,13 +184,13 @@ class TestScanResultList:
 
     def test_iterate_empty_list(self):
         """Test iterating over an empty ScanResultList."""
-        scan_list = ScanResultList(results=[])
+        scan_list = IndexingResultList(results=[])
         results = list(scan_list.iter_results())
         assert len(results) == 0
 
     def test_iter_results_generator(self):
         """Test that iter_results returns a generator."""
-        scan_list = ScanResultList(results=[])
+        scan_list = IndexingResultList(results=[])
         scan_data = {
             "id": "scan1",
             "root_path": "/path/to/scan1",
@@ -201,7 +204,7 @@ class TestScanResultList:
             "user": "user1",
             "host": "host1",
         }
-        scan_result = ScanResultSchema(**scan_data)
+        scan_result = IndexingResultSchema(**scan_data)
         scan_list.add_result(scan_result)
 
         result_generator = scan_list.iter_results()
@@ -214,7 +217,7 @@ class TestScanResultList:
 
     def test_add_result(self):
         """Test that add_result correctly adds a ScanResultSchema to the list."""
-        scan_list = ScanResultList(results=[])
+        scan_list = IndexingResultList(results=[])
         scan_data = {
             "id": "scan1",
             "root_path": "/path/to/scan1",
@@ -228,7 +231,7 @@ class TestScanResultList:
             "user": "user1",
             "host": "host1",
         }
-        scan_result = ScanResultSchema(**scan_data)
+        scan_result = IndexingResultSchema(**scan_data)
         scan_list.add_result(scan_result)
 
         assert len(scan_list.results) == 1

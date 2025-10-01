@@ -1,10 +1,10 @@
 name: workflow.yml
 on:
   push:
-    branches: [ "master", "dev-master" ]
+    branches: [ "main", "dev-main" ]
 
   pull_request:
-    branches: [ "master", "dev-master" ]
+    branches: [ "main", "dev-main" ]
 
 jobs:
   build-and-test:

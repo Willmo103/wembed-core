@@ -60,6 +60,8 @@ class AppConfig(BaseModel):
         Determine the host for the application.
         Defaults to 'localhost' if not set in environment variables.
         """
+        if self.environment == "development":
+            return "localhost"
         return env.get("COMPUTERNAME", env.get("HOSTNAME", "localhost")) or "localhost"
 
     @computed_field(return_type=str)
@@ -68,6 +70,8 @@ class AppConfig(BaseModel):
         Determine the user for the application.
         Defaults to the current system user if not set in environment variables.
         """
+        if self.environment == "development":
+            return "user"
         return env.get("USERNAME", env.get("USER", "unknown")) or "user"
 
     @computed_field(return_type=str)
@@ -84,9 +88,10 @@ class AppConfig(BaseModel):
     def ensure_paths(self) -> None:
         """
         Ensure that the application paths exist, creating them if necessary.
+        Returns True if paths exist or were created successfully, False otherwise.
         """
-        self.app_data().mkdir(parents=True, exist_ok=True)
-        self.logs_dir().mkdir(parents=True, exist_ok=True)
+        self.app_data.mkdir(parents=True, exist_ok=True)
+        self.logs_dir.mkdir(parents=True, exist_ok=True)
 
 
 class EmbeddingModelConfig(BaseModel):
@@ -109,4 +114,4 @@ class GotifyConfig(BaseModel):
     token: str = Field(..., description="API token for authenticating with Gotify")
 
 
-__all__ = ["AppConfig", "EmbeddingModelConfig"]
+__all__ = ["AppConfig", "EmbeddingModelConfig", "GotifyConfig"]

@@ -1,4 +1,4 @@
-name: workflow.yml
+name: ci.yml
 on:
   push:
     branches: [ "main", "dev-main" ]
@@ -50,9 +50,9 @@ jobs:
           # Executes your test suite using the uv-managed environment.
           uv run pytest
 
-#      # Step 9: Uploads the coverage report as a workflow artifact.
-#      - name: Upload coverage report
-#        uses: actions/upload-artifact@v4
-#        with:
-#          name: coverage-report
-#          path: tests/coverage.xml
+      # Step 9: Uploads the coverage report as a workflow artifact.
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage.xml

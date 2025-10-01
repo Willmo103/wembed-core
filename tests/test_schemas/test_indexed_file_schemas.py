@@ -1,5 +1,5 @@
 """
-tests/test_file_schemas.py
+tests/test_indexed_file_schemas.py
 Pytest tests for HostFileSchema Pydantic model.
 """
 

@@ -1,5 +1,5 @@
 """
-tests/test_scan_result_schema.py
+tests/test_indexing_results_schemas.py
 Pytest tests for ScanResultSchema Pydantic model.
 """
 
@@ -14,7 +14,7 @@ from wembed_core.schemas.indexing_result_schemas import (
 )
 
 
-class TestScanResultsSchema:
+class TestIndexingResultsSchema:
     """Test suite for ScanResultSchema Pydantic model."""
 
     def test_valid_scan_result(self):

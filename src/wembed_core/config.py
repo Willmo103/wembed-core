@@ -25,13 +25,10 @@ class AppConfig(BaseModel):
     Base configuration model with common settings.
     """
 
-    @computed_field(return_type=str)
-    def environment(self) -> str:
-        """
-        Determine the current environment based on environment variables.
-        Returns 'production' if neither DEV nor TESTING flags are set.
-        """
-        return get_environment()
+    debug: bool = Field(
+        default_factory=lambda: False if get_environment() == "production" else True,
+        description="Enable or disable debug mode.",
+    )
 
     @computed_field(return_type=Path)
     def app_data(self) -> Path:
@@ -42,8 +39,7 @@ class AppConfig(BaseModel):
         1. Development/Testing: ./data
         2. Production: ~/.wembed
         """
-        _env = get_environment()
-        if _env == "development" or _env == "testing":
+        if self.debug:
             return Path(__file__).parent.parent.parent / "data"
         return Path.home() / ".wembed"
 
@@ -60,7 +56,7 @@ class AppConfig(BaseModel):
         Determine the host for the application.
         Defaults to 'localhost' if not set in environment variables.
         """
-        if self.environment == "development":
+        if self.debug:
             return "localhost"
         return env.get("COMPUTERNAME", env.get("HOSTNAME", "localhost")) or "localhost"
 
@@ -70,7 +66,7 @@ class AppConfig(BaseModel):
         Determine the user for the application.
         Defaults to the current system user if not set in environment variables.
         """
-        if self.environment == "development":
+        if self.debug:
             return "user"
         return env.get("USERNAME", env.get("USER", "unknown")) or "user"
 
@@ -80,10 +76,27 @@ class AppConfig(BaseModel):
         Determine the SQLAlchemy database URI.
         Defaults to a SQLite database in the application data directory if not set.
         """
-        return env.get(
-            "SQLALCHEMY_URI",
-            f"sqlite:///{Path(self.app_data.as_posix()) / 'wembed.db'}",
-        )
+        if self.debug or not env.get("SQLALCHEMY_URI"):
+            pth = Path(self.app_data.as_posix())
+            return f"sqlite:///{pth / 'wembed.db'}"
+        return env["SQLALCHEMY_URI"]
+
+    @computed_field(return_type=str)
+    def ollama_url(self) -> str:
+        """
+        Determine the Ollama URL to set as Ollama env OLLAMA_HOST
+        Hierarchical resolution:
+        1: In development/testing, use TEST_OLLAMA_HOST if set
+        2: Ollama default Environment variable OLLAMA_HOST if set
+        3: Default to 'http://localhost:11434'
+        """
+        if self.debug:
+            if "TEST_OLLAMA_HOST" in env:
+                return env["TEST_OLLAMA_HOST"]
+        if not self.debug:
+            if "OLLAMA_HOST" in env:
+                return env["OLLAMA_HOST"]
+        return "http://localhost:11434"
 
     def ensure_paths(self) -> None:
         """

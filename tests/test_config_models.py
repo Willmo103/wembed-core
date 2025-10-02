@@ -70,6 +70,37 @@ class TestAppConfig:
         assert config.user == "user"
         del config
 
+    def test_sqlalchemy_uri_default(self):
+        dev_bak = None
+        sqlalchemy_bak = None
+        if "DEV" in env:
+            dev_bak = env["DEV"]
+            del env["DEV"]
+        if "SQLALCHEMY_URI" in env:
+            sqlalchemy_bak = env["SQLALCHEMY_URI"]
+            del env["SQLALCHEMY_URI"]
+        config = wbc.AppConfig()
+        expected_uri = f"sqlite:///{Path(config.app_data.as_posix()) / 'wembed.db'}"
+        assert config.sqlalchemy_uri == expected_uri
+        if dev_bak is not None:
+            env["DEV"] = dev_bak
+            del dev_bak
+        del config
+
+    def test_sqlalchemy_uri_with_env(self):
+        dev_bak = None
+        if "DEV" in env:
+            dev_bak = env["DEV"]
+            del env["DEV"]
+        env["SQLALCHEMY_URI"] = "postgresql://user:password@localhost/dbname"
+        config = wbc.AppConfig()
+        assert config.sqlalchemy_uri == "postgresql://user:password@localhost/dbname"
+        del env["SQLALCHEMY_URI"]
+        if dev_bak is not None:
+            env["DEV"] = dev_bak
+            del dev_bak
+        del config
+
     def test_debug_values(self):
         true_values = ["true", "1", "t", "TRUE", "T", "TrUe"]
         false_values = ["false", "0", "f", "FALSE", "F", "FaLsE"]

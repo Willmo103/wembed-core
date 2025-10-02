@@ -1,4 +1,8 @@
-from wembed_core.constants import HEADERS, IGNORE_EXTENSIONS  # , IGNORE_PARTS, MD_XREF
+from wembed_core.constants import (  # MD_XREF,
+    HEADERS,
+    IGNORE_EXTENSIONS,
+    IGNORE_PARTS,
+)
 
 
 class TestConstants:
@@ -10,9 +14,9 @@ class TestConstants:
         assert isinstance(IGNORE_EXTENSIONS, set)
         assert ".exe" in IGNORE_EXTENSIONS
 
-    # def test_ignore_parts(self):
-    #     assert isinstance(IGNORE_PARTS, set)
-    #     assert "node_modules" in IGNORE_PARTS
+    def test_ignore_parts(self):
+        assert isinstance(IGNORE_PARTS, set)
+        assert "node_modules" in IGNORE_PARTS
 
     # def test_md_xref(self):
     #     assert isinstance(MD_XREF, dict)

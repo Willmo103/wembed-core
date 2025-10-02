@@ -2,6 +2,7 @@ from os import environ as env
 from pathlib import Path
 
 import wembed_core as wbc
+import wembed_core.embedding
 
 
 class TestAppConfig:
@@ -74,7 +75,7 @@ class TestAppConfig:
 class TestEmbeddingModelConfig:
 
     def test_setting_parameters(self):
-        config = wbc.EmbeddingModelConfig(
+        config = wembed_core.embedding.EmbeddingModelConfig(
             model_name="test_model",
             hf_model_id="test/hf-model-id",
             embedding_length=768,
@@ -87,7 +88,7 @@ class TestEmbeddingModelConfig:
         del config
 
     def test_default_parameters(self):
-        config = wbc.EmbeddingModelConfig()
+        config = wembed_core.embedding.EmbeddingModelConfig()
         assert config.model_name == "embeddinggemma"
         assert config.hf_model_id == "google/embeddinggemma-300m"
         assert config.embedding_length == 768

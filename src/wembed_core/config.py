@@ -94,17 +94,6 @@ class AppConfig(BaseModel):
         self.logs_dir.mkdir(parents=True, exist_ok=True)
 
 
-class EmbeddingModelConfig(BaseModel):
-    """
-    Configuration model for embedding model settings.
-    """
-
-    model_name: str = Field(default="embeddinggemma")
-    hf_model_id: str = Field(default="google/embeddinggemma-300m")
-    embedding_length: int = Field(default=768)
-    max_tokens: int = Field(default=2048)
-
-
 class GotifyConfig(BaseModel):
     """
     Configuration model for Gotify notification service.
@@ -114,4 +103,4 @@ class GotifyConfig(BaseModel):
     token: str = Field(..., description="API token for authenticating with Gotify")
 
 
-__all__ = ["AppConfig", "EmbeddingModelConfig", "GotifyConfig"]
+__all__ = ["AppConfig", "GotifyConfig"]

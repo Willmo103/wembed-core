@@ -1,7 +1,8 @@
-from wembed_core.constants import (  # MD_XREF,
+from wembed_core.constants import (
     HEADERS,
     IGNORE_EXTENSIONS,
     IGNORE_PARTS,
+    MD_XREF,
 )
 
 
@@ -18,7 +19,7 @@ class TestConstants:
         assert isinstance(IGNORE_PARTS, set)
         assert "node_modules" in IGNORE_PARTS
 
-    # def test_md_xref(self):
-    #     assert isinstance(MD_XREF, dict)
-    #     assert ".py" in MD_XREF
-    #     assert MD_XREF[".py"] == "python"
+    def test_md_xref(self):
+        assert isinstance(MD_XREF, dict)
+        assert ".py" in MD_XREF
+        assert MD_XREF[".py"] == "python"

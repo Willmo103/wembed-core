@@ -46,9 +46,11 @@ jobs:
 
       # Step 8: Runs the test suite with pytest.
       - name: Run tests with pytest
+        env :
+          OLLAMA_HOST: ${{ secrets.OLLAMA_HOST }}
         run: |
           # Executes your test suite using the uv-managed environment.
-          uv run pytest
+          uv run pytest 
 
       # Step 9: Uploads the coverage report as a workflow artifact.
       - name: Upload coverage report

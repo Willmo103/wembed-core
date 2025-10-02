@@ -1,5 +1,5 @@
 """
-source: wembed_core/models/file_record.py
+source: wembed_core/models/indexed_files.py
 SQLAlchemy model for file records in the 'host_files' table.
 """
 
@@ -18,9 +18,9 @@ from sqlalchemy.orm import Mapped, mapped_column
 from ..database import AppBase as Base
 
 
-class HostFilesRecord(Base):
+class IndexedFiles(Base):
     """
-    SQLAlchemy model for the 'host_files' table, representing file records.
+    SQLAlchemy model for the 'indexed_files' table, representing file records.
 
     Attributes:
         id (str): Unique identifier for the file (primary key).
@@ -50,7 +50,7 @@ class HostFilesRecord(Base):
         updated_at (datetime): Timestamp when the record was last updated.
     """
 
-    __tablename__ = "host_files"
+    __tablename__ = "indexed_files"
 
     id: Mapped[str] = mapped_column(String, primary_key=True)
     version: Mapped[int] = mapped_column(Integer, nullable=False, default=1)

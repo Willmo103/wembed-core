@@ -9,6 +9,8 @@ setlocal enabledelayedexpansion
 :: ============================================================================
 
 :: --- SCRIPT SETUP ---
+:: clear the screen for better readability
+cls
 echo Setting up environment...
 set "SCRIPT_DIR=%~dp0"
 set "REPO_ROOT=%SCRIPT_DIR%..\"
@@ -43,6 +45,8 @@ echo 3. Linting with flake8...
 uv run flake8 src
 if !errorlevel! neq 0 (
     echo ^> Flake8 found issues that could not be automatically fixed.
+    echo ^> Please review and fix them manually.
+    exit /b 1
 )
 echo.
 
@@ -51,6 +55,7 @@ echo All cleanup tasks have been completed
 uv run pytest
 if !errorlevel! neq 0 (
     echo ^> Tests failed. Please fix the issues before committing.
+    exit /b 1
 )
 echo.
 echo ============================================================================

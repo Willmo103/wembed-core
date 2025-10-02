@@ -1,5 +1,5 @@
 """
-source: wembed_core/models/scan_result.py
+source: wembed_core/models/indexing_results.py
 SQLAlchemy model for file records in the 'host_files' table.
 """
 
@@ -12,7 +12,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from ..database import AppBase as Base
 
 
-class ScanResultRecord(Base):
+class FileIndexingResults(Base):
     """
     SQLAlchemy model for scan results.
 
@@ -30,7 +30,7 @@ class ScanResultRecord(Base):
     - host (str): The host where the scan was performed.
     """
 
-    __tablename__ = "scan_results"
+    __tablename__ = "file_index_results"
 
     id: Mapped[str] = mapped_column(String, primary_key=True, unique=True, index=True)
     root_path: Mapped[str] = mapped_column(String, nullable=False, index=True)

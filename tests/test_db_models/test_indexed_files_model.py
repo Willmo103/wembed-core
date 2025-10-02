@@ -10,8 +10,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from wembed_core.config import AppConfig
-from wembed_core.database import AppBase, DatabaseService
-from wembed_core.models.file_record import HostFilesRecord
+from wembed_core.database import DatabaseService
+from wembed_core.models import IndexedFiles
 
 
 class TestDatabaseAndFileRecord:
@@ -75,7 +75,7 @@ class TestDatabaseAndFileRecord:
         now = datetime.now()
 
         # Create a test record
-        test_record = HostFilesRecord(
+        test_record = IndexedFiles(
             id="test-file-001",
             version=1,
             source_type="git",
@@ -106,9 +106,7 @@ class TestDatabaseAndFileRecord:
         db_session.commit()
 
         # Query the record back
-        retrieved = (
-            db_session.query(HostFilesRecord).filter_by(id="test-file-001").first()
-        )
+        retrieved = db_session.query(IndexedFiles).filter_by(id="test-file-001").first()
 
         assert retrieved is not None
         assert retrieved.id == "test-file-001"
@@ -121,7 +119,7 @@ class TestDatabaseAndFileRecord:
         now = datetime.now()
 
         # Create first record
-        record1 = HostFilesRecord(
+        record1 = IndexedFiles(
             id="file-001",
             version=1,
             source_type="local",
@@ -152,7 +150,7 @@ class TestDatabaseAndFileRecord:
         db_session.commit()
 
         # Attempt to create second record with same sha256
-        record2 = HostFilesRecord(
+        record2 = IndexedFiles(
             id="file-002",
             version=1,
             source_type="local",
@@ -193,7 +191,7 @@ class TestDatabaseAndFileRecord:
         assert session is not None
 
         # Verify we can use the session
-        result = session.query(HostFilesRecord).all()
+        result = session.query(IndexedFiles).all()
         assert isinstance(result, list)
 
         session.close()
@@ -203,7 +201,7 @@ class TestDatabaseAndFileRecord:
         now = datetime.now()
 
         # Test with None content
-        record_without_content = HostFilesRecord(
+        record_without_content = IndexedFiles(
             id="no-content-file",
             version=1,
             source_type="local",
@@ -235,13 +233,13 @@ class TestDatabaseAndFileRecord:
         db_session.commit()
 
         retrieved = (
-            db_session.query(HostFilesRecord).filter_by(id="no-content-file").first()
+            db_session.query(IndexedFiles).filter_by(id="no-content-file").first()
         )
         assert retrieved.content is None
 
         # Test with binary content
         binary_data = b"\x00\x01\x02\x03\xff"
-        record_with_content = HostFilesRecord(
+        record_with_content = IndexedFiles(
             id="binary-content-file",
             version=1,
             source_type="local",
@@ -273,8 +271,6 @@ class TestDatabaseAndFileRecord:
         db_session.commit()
 
         retrieved_binary = (
-            db_session.query(HostFilesRecord)
-            .filter_by(id="binary-content-file")
-            .first()
+            db_session.query(IndexedFiles).filter_by(id="binary-content-file").first()
         )
         assert retrieved_binary.content == binary_data

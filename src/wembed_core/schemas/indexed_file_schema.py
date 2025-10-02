@@ -9,7 +9,7 @@ from typing import Optional
 from pydantic import BaseModel, Field
 
 
-class HostFileSchema(BaseModel):
+class IndexedFileSchema(BaseModel):
     id: str = Field(..., description="Unique identifier for the file")
     version: int = Field(1, description="Version number of the file record")
     source_type: str = Field(

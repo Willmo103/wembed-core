@@ -12,9 +12,9 @@ class IndexedRepos(AppBase):
     Represents a code repository in the database.
 
     Attributes:
-        id (int): Primary key.
-        repo_name (str): Name of the repository.
-        host (str): Host of the repository (e.g., GitHub, GitLab).
+        id (int) NOT NULL: Primary key.
+        repo_name (str) NOT NULL: Name of the repository.
+        host (str): Host where the repository was indexed
         root_path (str): Root path of the repository.
         files (List[str], optional): List of file paths in the repository.
         file_count (int): Number of files in the repository.

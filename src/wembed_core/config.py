@@ -1,3 +1,4 @@
+# src/wembed_core/config.py
 """
 Configuration Models for Wembed Core
 """
@@ -5,7 +6,21 @@ Configuration Models for Wembed Core
 from os import environ as env
 from pathlib import Path
 
-from pydantic import BaseModel, Field, computed_field
+from pydantic import BaseModel, Field, computed_field, model_validator
+
+
+def application_root() -> Path:
+    """
+    Determine the application root directory based on the current file's location.
+    """
+    return Path(__file__).parent.parent.parent.resolve()
+
+
+def user_data_dir() -> Path:
+    """
+    Determine the path to the installed user data directory.
+    """
+    return Path().home() / ".wembed"
 
 
 def get_environment() -> str:
@@ -23,36 +38,76 @@ def get_environment() -> str:
 class AppConfig(BaseModel):
     """
     Base configuration model with common settings.
+    This model uses a validator to set path-related fields based on the 'debug' flag,
+    ensuring consistent behavior whether configured by environment variables or direct instantiation.
     """
 
-    @computed_field(return_type=str)
-    def environment(self) -> str:
-        """
-        Determine the current environment based on environment variables.
-        Returns 'production' if neither DEV nor TESTING flags are set.
-        """
-        return get_environment()
-
-    @computed_field(return_type=Path)
-    def app_data(self) -> Path:
-        """
-        Determine the application data directory based on the environment.
-        In development or testing, it points to a local 'data' directory.
-        In production, it points to a hidden directory in the user's home.
+    debug: bool = Field(
+        default_factory=lambda: get_environment() == "development",
+        description="Enable or disable debug mode.",
+    )
+    # The following fields have dummy defaults; they will be correctly
+    # set by the model_validator after 'debug' is resolved.
+    app_data: Path = Field(
+        default=Path(),
+        description="""
+        The application data directory.
         1. Development/Testing: ./data
         2. Production: ~/.wembed
-        """
-        _env = get_environment()
-        if _env == "development" or _env == "testing":
-            return Path(__file__).parent.parent.parent / "data"
-        return Path.home() / ".wembed"
+        """,
+    )
+    logs_dir: Path = Field(
+        default=Path(),
+        description="logs directory based on the application data directory",
+    )
+    sqlalchemy_uri: str = Field(
+        default="",
+        description="""
+        The SQLAlchemy database URI.
+        Defaults to a SQLite database in the application data directory.
+        Can be overridden by the SQLALCHEMY_URI env var in development mode.
+        """,
+    )
+    ollama_url: str = Field(
+        default_factory=lambda: (
+            env.get("TEST_OLLAMA_HOST", "http://localhost:11434")
+            if get_environment() == "development"
+            else env.get("OLLAMA_HOST", "http://localhost:11434")
+        ),
+        description="""
+        The Ollama URL to set as Ollama env OLLAMA_HOST.
+        Hierarchical resolution:
+        1: In development/testing, use TEST_OLLAMA_HOST if set
+        2: Ollama default Environment variable OLLAMA_HOST if set
+        3: Default to 'http://localhost:11434'
+        """,
+    )
 
-    @computed_field(return_type=Path)
-    def logs_dir(self) -> Path:
+    @model_validator(mode="after")
+    def set_dependent_fields(self) -> "AppConfig":
         """
-        Determine the logs directory based on the application data directory.
+        Sets configuration fields that depend on the final value of 'debug' after the model is initialized.
         """
-        return Path(self.app_data.as_posix()) / "logs"  # mypy: ignore
+        # Set app_data path based on the final debug status
+        if self.debug:
+            self.app_data = application_root() / "data"
+        else:
+            self.app_data = user_data_dir()
+
+        # Set logs_dir based on the final app_data path
+        self.logs_dir = self.app_data / "logs"
+
+        # Set sqlalchemy_uri, allowing override from env var only in debug mode
+        if self.debug and "SQLALCHEMY_URI" in env:
+            self.sqlalchemy_uri = env["SQLALCHEMY_URI"].replace("\\", "/")
+        else:
+            db_path = self.app_data / "wembed.db"
+            # Use .as_posix() to ensure forward slashes for a valid URI
+            self.sqlalchemy_uri = f"sqlite:///{db_path.as_posix()}"
+
+        # Ensure all necessary directories exist
+        self.ensure_paths()
+        return self
 
     @computed_field(return_type=str)
     def host(self) -> str:
@@ -60,7 +115,7 @@ class AppConfig(BaseModel):
         Determine the host for the application.
         Defaults to 'localhost' if not set in environment variables.
         """
-        if self.environment == "development":
+        if self.debug:
             return "localhost"
         return env.get("COMPUTERNAME", env.get("HOSTNAME", "localhost")) or "localhost"
 
@@ -70,39 +125,16 @@ class AppConfig(BaseModel):
         Determine the user for the application.
         Defaults to the current system user if not set in environment variables.
         """
-        if self.environment == "development":
+        if self.debug:
             return "user"
-        return env.get("USERNAME", env.get("USER", "unknown")) or "user"
-
-    @computed_field(return_type=str)
-    def sqlalchemy_uri(self) -> str:
-        """
-        Determine the SQLAlchemy database URI.
-        Defaults to a SQLite database in the application data directory if not set.
-        """
-        return env.get(
-            "SQLALCHEMY_URI",
-            f"sqlite:///{Path(self.app_data.as_posix()) / 'wembed.db'}",
-        )
+        return env.get("USERNAME", env.get("USER", "user")) or "user"
 
     def ensure_paths(self) -> None:
         """
         Ensure that the application paths exist, creating them if necessary.
-        Returns True if paths exist or were created successfully, False otherwise.
         """
         self.app_data.mkdir(parents=True, exist_ok=True)
         self.logs_dir.mkdir(parents=True, exist_ok=True)
-
-
-class EmbeddingModelConfig(BaseModel):
-    """
-    Configuration model for embedding model settings.
-    """
-
-    model_name: str = Field(default="embeddinggemma")
-    hf_model_id: str = Field(default="google/embeddinggemma-300m")
-    embedding_length: int = Field(default=768)
-    max_tokens: int = Field(default=2048)
 
 
 class GotifyConfig(BaseModel):
@@ -114,4 +146,4 @@ class GotifyConfig(BaseModel):
     token: str = Field(..., description="API token for authenticating with Gotify")
 
 
-__all__ = ["AppConfig", "EmbeddingModelConfig", "GotifyConfig"]
+__all__ = ["AppConfig", "GotifyConfig", "get_environment"]

@@ -2,12 +2,6 @@ from os import environ as env
 from pathlib import Path
 
 import wembed_core as wbc
-import wembed_core.embedding
-
-from os import environ as env
-from pathlib import Path
-
-import wembed_core as wbc
 import wembed_core.config  # Import config to access helper functions if needed
 import wembed_core.embedding
 

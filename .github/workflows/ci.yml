@@ -47,7 +47,7 @@ jobs:
       # Step 8: Runs the test suite with pytest.
       - name: Run tests with pytest
         env :
-          OLLAMA_HOST: ${{ secrets.OLLAMA_HOST }}
+          TEST_OLLAMA_HOST: ${{ secrets.TEST_OLLAMA_HOST }}
         run: |
           # Executes your test suite using the uv-managed environment.
           uv run pytest 

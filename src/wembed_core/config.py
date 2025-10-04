@@ -4,8 +4,23 @@ Configuration Models for Wembed Core
 
 from os import environ as env
 from pathlib import Path
+from typing import Any
 
 from pydantic import BaseModel, Field, computed_field
+
+
+def application_root() -> Path:
+    """
+    Determine the application root directory based on the current file's location.
+    """
+    return Path(__file__).parent.parent.parent.resolve()
+
+
+def user_data_dir() -> Path:
+    """
+    Determine the path to the installed user data directory.
+    """
+    return Path().home() / ".wembed"
 
 
 def get_environment() -> str:
@@ -26,29 +41,32 @@ class AppConfig(BaseModel):
     """
 
     debug: bool = Field(
-        default_factory=lambda: False if get_environment() == "production" else True,
+        default_factory=lambda: True if get_environment() == "development" else False,
         description="Enable or disable debug mode.",
     )
-
-    @computed_field(return_type=Path)
-    def app_data(self) -> Path:
-        """
-        Determine the application data directory based on the environment.
+    app_data: Path = Field(
+        default_factory=lambda v: (
+            user_data_dir()
+            if get_environment() == "production"
+            else application_root() / "data"
+        ),
+        description="""
+        The application data directory. The default value is based on the environment.
         In development or testing, it points to a local 'data' directory.
         In production, it points to a hidden directory in the user's home.
         1. Development/Testing: ./data
         2. Production: ~/.wembed
-        """
-        if self.debug:
-            return Path(__file__).parent.parent.parent / "data"
-        return Path.home() / ".wembed"
+        """,
+    )
 
-    @computed_field(return_type=Path)
-    def logs_dir(self) -> Path:
-        """
-        Determine the logs directory based on the application data directory.
-        """
-        return Path(self.app_data.as_posix()) / "logs"  # mypy: ignore
+    logs_dir: Path = Field(
+        default_factory=lambda v: (
+            user_data_dir() / "logs"
+            if get_environment() == "production"
+            else application_root() / "data" / "logs"
+        ),
+        description="logs directory based on the application data directory",
+    )
 
     @computed_field(return_type=str)
     def host(self) -> str:
@@ -68,35 +86,48 @@ class AppConfig(BaseModel):
         """
         if self.debug:
             return "user"
-        return env.get("USERNAME", env.get("USER", "unknown")) or "user"
+        if "USERNAME" in env:
+            return env["USERNAME"]
+        if "USER" in env:
+            return env["USER"]
+        return "user"
 
-    @computed_field(return_type=str)
-    def sqlalchemy_uri(self) -> str:
-        """
-        Determine the SQLAlchemy database URI.
+    sqlalchemy_uri: str = Field(
+        default_factory=lambda: (
+            f"sqlite:///{(Path().home() / '.wembed' / 'wembed.db').as_posix().replace('\\', '/')}"
+            if get_environment() == "production"
+            else (
+                f"sqlite:///{(application_root() / 'data' / 'wembed.db').as_posix().replace('\\', '/')}"
+                if not env.get("SQLALCHEMY_URI")
+                else env["SQLALCHEMY_URI"].replace("\\", "/")
+            )
+        ),
+        description="""
+        The SQLAlchemy database URI.
         Defaults to a SQLite database in the application data directory if not set.
-        """
-        if self.debug or not env.get("SQLALCHEMY_URI"):
-            pth = Path(self.app_data.as_posix())
-            return f"sqlite:///{pth / 'wembed.db'}"
-        return env["SQLALCHEMY_URI"]
+        """,
+    )
 
-    @computed_field(return_type=str)
-    def ollama_url(self) -> str:
-        """
-        Determine the Ollama URL to set as Ollama env OLLAMA_HOST
+    ollama_url: str = Field(
+        default_factory=lambda: (
+            env.get("TEST_OLLAMA_HOST", "http://localhost:11434")
+            if get_environment() == "development"
+            else env.get("OLLAMA_HOST", "http://localhost:11434")
+        ),
+        description="""
+        The Ollama URL to set as Ollama env OLLAMA_HOST.
         Hierarchical resolution:
         1: In development/testing, use TEST_OLLAMA_HOST if set
         2: Ollama default Environment variable OLLAMA_HOST if set
         3: Default to 'http://localhost:11434'
-        """
-        if self.debug:
-            if "TEST_OLLAMA_HOST" in env:
-                return env["TEST_OLLAMA_HOST"]
-        if not self.debug:
-            if "OLLAMA_HOST" in env:
-                return env["OLLAMA_HOST"]
-        return "http://localhost:11434"
+        """,
+    )
+
+    def __init__(self, **data: Any):
+        if get_environment() == "development":
+            data["debug"] = True
+        super().__init__(**data)
+        self.ensure_paths()
 
     def ensure_paths(self) -> None:
         """
@@ -116,4 +147,4 @@ class GotifyConfig(BaseModel):
     token: str = Field(..., description="API token for authenticating with Gotify")
 
 
-__all__ = ["AppConfig", "GotifyConfig"]
+__all__ = ["AppConfig", "GotifyConfig", "get_environment"]

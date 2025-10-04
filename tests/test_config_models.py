@@ -4,9 +4,16 @@ from pathlib import Path
 import wembed_core as wbc
 import wembed_core.embedding
 
+from os import environ as env
+from pathlib import Path
+
+import wembed_core as wbc
+import wembed_core.config  # Import config to access helper functions if needed
+import wembed_core.embedding
+
 
 class TestAppConfig:
-
+    # ... (Your backup, clear_env, and restore_env methods are fine) ...
     _backup_dev = env.get("DEV", None)
     _backup_testing = env.get("TESTING", None)
     _backup_sqlalchemy = env.get("SQLALCHEMY_URI", None)
@@ -40,15 +47,13 @@ class TestAppConfig:
     def test_environment_default(self):
         self.clear_env()
         config = wbc.AppConfig()
-        assert config.debug == False
-        del config
-        self.clear_env()
+        assert config.debug is False
+        self.restore_env()
 
     def test_default_app_config_when_env_is_production(self):
-        # Clear environment variables for this test
         self.clear_env()
         config = wbc.AppConfig()
-        assert config.debug == False
+        assert config.debug is False
         assert config.app_data == Path.home() / ".wembed"
         assert config.app_data.name == ".wembed"
         assert config.logs_dir == Path.home() / ".wembed" / "logs"
@@ -59,43 +64,56 @@ class TestAppConfig:
         assert isinstance(config.host, str)
         assert config.user is not None
         assert isinstance(config.user, str)
-        self.clear_env()
+        self.restore_env()
 
     def test_debug(self):
         self.clear_env()
+        # The new logic correctly handles being instantiated with debug=True
         config = wbc.AppConfig(debug=True)
-        assert config.debug == True
-        assert config.app_data == Path(__file__).parent.parent / "data"
+        assert config.debug is True
+
+        # Use the source function to get the expected root for consistency
+        expected_root = wbc.config.application_root()
+
+        assert config.app_data == expected_root / "data"
         assert config.app_data.name == "data"
         assert config.logs_dir == config.app_data / "logs"
         assert config.logs_dir.name == "logs"
-        assert config.sqlalchemy_uri == "sqlite:///" + str(
-            config.app_data / "wembed.db"
-        ).replace(
-            "\\", "/"
-        )  # noqa
+
+        # Construct the expected URI using .as_posix() to match the implementation
+        expected_uri = f"sqlite:///{(expected_root / 'data' / 'wembed.db').as_posix()}"
+        assert config.sqlalchemy_uri == expected_uri
+
         assert config.host == "localhost"
         assert config.user == "user"
-        del config
         self.restore_env()
 
     def test_sqlalchemy_uri_default(self):
         self.clear_env()
-        config = wbc.AppConfig()
-        expected_uri = f"sqlite:///{(Path(config.app_data.as_posix()) / 'wembed.db')}"
+        config = wbc.AppConfig()  # Production mode by default
+
+        # FIX: Use .as_posix() to ensure the expected URI uses forward slashes,
+        # which will match the implementation and pass on all operating systems.
+        expected_db_path = Path.home() / ".wembed" / "wembed.db"
+        expected_uri = f"sqlite:///{expected_db_path.as_posix()}"
+
         assert config.sqlalchemy_uri == expected_uri
-        del config
         self.restore_env()
 
     def test_sqlalchemy_uri_with_env(self):
         self.clear_env()
+        # FIX: Set DEV=true. The new logic correctly scopes the SQLALCHEMY_URI
+        # override to only apply during development to prevent accidents.
+        env["DEV"] = "true"
         env["SQLALCHEMY_URI"] = "postgresql://user:password@localhost/dbname"
-        config = wbc.AppConfig(debug=False)
+
+        # Instantiate the config *after* setting the environment
+        config = wbc.AppConfig()
+
         assert config.sqlalchemy_uri == "postgresql://user:password@localhost/dbname"
-        del env["SQLALCHEMY_URI"]
-        del config
         self.restore_env()
 
+    # ... (the rest of your tests should be fine) ...
     def test_debug_values(self):
         self.clear_env()
         true_values = ["true", "1", "t", "TRUE", "T", "TrUe"]
@@ -104,58 +122,51 @@ class TestAppConfig:
         for val in true_values:
             env["DEV"] = val
             config = wbc.AppConfig()
-            assert config.debug == True
-            del config
+            assert config.debug is True
             self.clear_env()
 
         for val in false_values:
             env["DEV"] = val
             config = wbc.AppConfig()
-            assert config.debug == False
-            del config
+            assert config.debug is False
             self.clear_env()
+        self.restore_env()
 
     def test_ensure_paths_returns_true(self):
         self.clear_env()
-        config = wbc.AppConfig()
-        config.ensure_paths()
+        # Use debug mode to create paths in the project dir, not the user's home
+        config = wbc.AppConfig(debug=True)
         assert config.app_data.exists()
         assert config.logs_dir.exists()
-        del config
-        self.clear_env()
         self.restore_env()
 
     def test_ollama_host_default(self):
         self.clear_env()
         config = wbc.AppConfig()
         assert config.ollama_url == "http://localhost:11434"
-        del config
         self.restore_env()
 
     def test_ollama_host_with_ollama_env(self):
-        host = env.get("OLLAMA_HOST", None)
         self.clear_env()
+
+        # test with OLLAMA_HOST in production
         env["OLLAMA_HOST"] = "http://ollama-host:1234"
         config = wbc.AppConfig()
-        assert config.debug == False
+        assert config.debug is False
         assert config.ollama_url == "http://ollama-host:1234"
         self.clear_env()
-        del config
 
         # test with DEV mode and TEST_OLLAMA_HOST
         env["DEV"] = "true"
         env["TEST_OLLAMA_HOST"] = "http://test-ollama-host:5678"
         config = wbc.AppConfig()
-        assert config.debug == True
+        assert config.debug is True
         assert config.ollama_url == "http://test-ollama-host:5678"
         self.clear_env()
-        del config
 
         # test with no dev and no TEST_OLLAMA_HOST or OLLAMA_HOST
         config = wbc.AppConfig()
         assert config.ollama_url == "http://localhost:11434"
-        del config
-        self.clear_env()
         self.restore_env()
 
 

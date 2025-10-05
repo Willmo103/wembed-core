@@ -30,6 +30,9 @@ def get_environment() -> str:
     """
     dev_flag = env.get("DEV", "false").lower() in ("true", "1", "t")
     testing_flag = env.get("TESTING", "false").lower() in ("true", "1", "t")
+    testing_ollama_flag = env.get("TEST_OLLAMA", "false").lower() in ("true", "1", "t")
+    # Consider TEST_OLLAMA as part of testing environment
+    testing_flag = testing_flag or testing_ollama_flag
     if dev_flag or testing_flag:
         return "development"
     return "production"

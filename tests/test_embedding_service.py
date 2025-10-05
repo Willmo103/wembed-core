@@ -25,6 +25,8 @@ class TestEmbeddingService:
             embedding_model_config=EmbeddingModelConfig(),
         )
 
+    # THIS TEST WORKS BUT WILL NOT RUN PROPERLY IN CI WITHOUT A RUNNING OLLAMA INSTANCE
+    @pytest.mark.skip(reason="Requires running Ollama instance")
     def test_get_embedding(self, embedding_service: EmbeddingService):
         text = "This is a test."
         embedding = embedding_service.get_embedding(text)

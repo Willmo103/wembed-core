@@ -1,11 +1,7 @@
-import os
-
-import llm
-
 # import llm_ollama  # noqa: F401 # Ensure the Ollama integration is loaded for llm
 from pydantic import BaseModel, Field
 
-from wembed_core import AppConfig
+from wembed_core.ollama_client import OllamaClient
 
 # from typing import Optional
 
@@ -28,23 +24,18 @@ class EmbeddingService:
 
     def __init__(
         self,
-        app_config: AppConfig = AppConfig(),
-        embedding_model_config: EmbeddingModelConfig = EmbeddingModelConfig(),
+        OllamaClient: OllamaClient,
+        embedding_model_config: EmbeddingModelConfig,
     ):
-        try:
-            import llm_ollama  # noqa: F401 # Ensure the Ollama integration is loaded for llm
+        self.ollama_client = OllamaClient
+        self.embedding_config = embedding_model_config
 
-            self.app_config = app_config
-            self.embedding_config = embedding_model_config
-            os.environ["OLLAMA_HOST"] = self.app_config.ollama_url
-            self._model: llm.EmbeddingModel = llm.get_embedding_model(
-                name=self.embedding_config.model_name,
-            )
-        except Exception as e:
-            raise RuntimeError(f"Failed to initialize EmbeddingService: {e}")
-
-    def get_embedding(self, text: str) -> list[float]:
+    def get_embedding(self, text: str) -> list[list[float]]:
         """
         Generate an embedding for the given text using the specified model.
         """
-        return self._model.embed(text)
+        return self.ollama_client.client.embed(
+            model=self.embedding_config.model_name,
+            input=text,
+            truncate=False,
+        ).embeddings

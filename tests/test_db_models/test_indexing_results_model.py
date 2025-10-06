@@ -23,7 +23,7 @@ class TestScanResultRecord:
 
         config = Mock(spec=AppConfig)
         config.sqlalchemy_uri = "sqlite:///:memory:"
-        config.environment = "development"
+        config.debug = True
         return config
 
     def test_scan_result_record_creation(self, config):

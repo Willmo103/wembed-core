@@ -15,10 +15,10 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import Mapped, mapped_column
 
-from ..database import AppBase as Base
+from ..database import AppBase
 
 
-class IndexedFiles(Base):
+class IndexedFiles(AppBase):
     """
     SQLAlchemy model for the 'indexed_files' table, representing file records.
 

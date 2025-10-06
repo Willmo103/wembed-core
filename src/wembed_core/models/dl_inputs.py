@@ -17,7 +17,6 @@ class DLInputs(AppBase):
       status (str): Current status of the input (e.g., 'pending', 'processed', 'error').
       errors (Optional[str]): Any error messages associated with the input.
       added_at (datetime): Timestamp when the input was added.
-      processed (bool): Flag indicating if the input has been processed.
       processed_at (Optional[datetime]): Timestamp when the input was processed.
       output_doc_id (Optional[int]): Foreign key linking to the output document record.
     """

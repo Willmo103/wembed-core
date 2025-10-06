@@ -94,3 +94,23 @@ class TestDLModels:
         assert doc_record.text == "test"
         assert doc_record.doctags is None
         assert doc_record.chunks_json is None
+
+    def test_dl_chunks_crud(self, db_session, config):
+        """Test CRUD operations for DLChunks model."""
+        # Create a DLChunks record
+        chunk_record = DLChunks(
+            id=1,
+            document_id=1,
+            chunk_index=0,
+            text_chunk="This is a test chunk.",
+            embedding=[0.1] * 768,  # Mock embedding vector
+            created_at=datetime.now(timezone.utc),
+        )
+        db_session.add(chunk_record)
+        db_session.commit()
+        db_session.refresh(chunk_record)
+        assert chunk_record.id == 1
+        assert chunk_record.document_id == 1
+        assert chunk_record.chunk_index == 0
+        assert chunk_record.text_chunk == "This is a test chunk."
+        assert len(chunk_record.embedding) == 768

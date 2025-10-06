@@ -25,7 +25,7 @@ class TestDatabaseAndFileRecord:
 
         config = Mock(spec=AppConfig)
         config.sqlalchemy_uri = "sqlite:///:memory:"
-        config.environment = "development"
+        config.debug = True
         return config
 
     @pytest.fixture

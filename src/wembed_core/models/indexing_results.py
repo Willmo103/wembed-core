@@ -9,25 +9,25 @@ from typing import List, Optional
 from sqlalchemy import JSON, DateTime, Float, String
 from sqlalchemy.orm import Mapped, mapped_column
 
-from ..database import AppBase as Base
+from ..database import AppBase
 
 
-class FileIndexingResults(Base):
+class FileIndexingResults(AppBase):
     """
     SQLAlchemy model for scan results.
 
     Attributes:
-    - id (str): Unique identifier for the scan result.
-    - root_path (str): The root path that was scanned.
-    - scan_type (str): The type of scan performed (e.g., 'full', 'incremental').
-    - scan_name (Optional[str]): An optional name for the scan.
-    - files (Optional[List[str]]): List of file paths found during the scan.
-    - scan_start (datetime): Timestamp when the scan started.
-    - scan_end (Optional[datetime]): Timestamp when the scan ended.
-    - duration (Optional[int]): Duration of the scan in seconds.
-    - options (Optional[dict]): Additional options used during the scan.
-    - user (str): The user who initiated the scan.
-    - host (str): The host where the scan was performed.
+      id (str): Unique identifier for the scan result.
+      root_path (str): The root path that was scanned.
+      scan_type (str): The type of scan performed (e.g., 'full', 'incremental').
+      scan_name (Optional[str]): An optional name for the scan.
+      files (Optional[List[str]]): List of file paths found during the scan.
+      scan_start (datetime): Timestamp when the scan started.
+      scan_end (Optional[datetime]): Timestamp when the scan ended.
+      duration (Optional[int]): Duration of the scan in seconds.
+      options (Optional[dict]): Additional options used during the scan.
+      user (str): The user who initiated the scan.
+      host (str): The host where the scan was performed.
     """
 
     __tablename__ = "file_index_results"

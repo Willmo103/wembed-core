@@ -10,7 +10,7 @@ from .config import AppConfig
 
 AppBase = declarative_base()
 """
-Declarative base for SQLAlchemy models.
+AppBase is the base sqlalchemy.orm.declarative_base() instance for all models.
 """
 
 
@@ -32,7 +32,7 @@ class DatabaseService:
             config (AppConfig): Application configuration containing database settings.
         """
         self.uri = str(config.sqlalchemy_uri)
-        self.debug = config.environment == "development"
+        self.debug = config.debug
         self.engine = None
         self.SessionLocal = None
 

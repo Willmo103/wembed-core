@@ -1,5 +1,6 @@
 """
 wembed_core.schemas.file_schemas
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Schemas for file records using Pydantic.
 """
 

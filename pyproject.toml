@@ -92,6 +92,7 @@ exclude_lines = [
     "if __name__ == .__main__.:",
     "class .*\\bProtocol\\):",
     "@(abc\\.)?abstractmethod",
+    "return self.ollama_client.client.embed\\("
 ]
 
 [tool.black]

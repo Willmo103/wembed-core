@@ -1,6 +1,7 @@
 import datetime
-from typing import List, Optional, Set
 import uuid
+from typing import List, Optional, Set
+
 from pydantic import BaseModel
 
 
@@ -17,10 +18,12 @@ class GitCommitSchema(BaseModel):
 
     class Config:
         """Pydantic configuration to handle datetime serialization."""
+
         json_encoders = {
             datetime: lambda v: v.isoformat(),
         }
         from_attributes = True
+        arbitrary_types_allowed = True
 
 
 class GitFileInfoSchema(BaseModel):
@@ -43,6 +46,7 @@ class GitFileInfoSchema(BaseModel):
             datetime: lambda v: v.isoformat(),
         }
         from_attributes = True
+        arbitrary_types_allowed = True
 
 
 class GitBranchSchema(BaseModel):
@@ -60,6 +64,7 @@ class GitBranchSchema(BaseModel):
             datetime: lambda v: v.isoformat(),
         }
         from_attributes = True
+        arbitrary_types_allowed = True
 
 
 class DependencyNode(BaseModel):
@@ -95,7 +100,7 @@ class ImportStatement(BaseModel):
         from_attributes = True
 
 
-class CodeChunk:
+class CodeChunk(BaseModel):
     """Represents a chunk of code with metadata"""
 
     id: uuid.UUID
@@ -105,7 +110,7 @@ class CodeChunk:
     start_line: int
     end_line: int
     parent_id: Optional[str] = None
-    dependencies: Set[str] = None
+    dependencies: Set[str] = set()
     docstring: Optional[str] = None
 
     def __post_init__(self):
@@ -115,6 +120,7 @@ class CodeChunk:
     class Config:
         """Pydantic configuration"""
 
+        arbitrary_types_allowed = True
         from_attributes = True
 
 
@@ -132,6 +138,7 @@ class UsageNode(BaseModel):
     class Config:
         """Pydantic configuration"""
 
+        arbitrary_types_allowed = True
         from_attributes = True
 
 
@@ -147,4 +154,5 @@ class FunctionCall(BaseModel):
     class Config:
         """Pydantic configuration"""
 
+        arbitrary_types_allowed = True
         from_attributes = True

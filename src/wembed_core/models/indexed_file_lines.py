@@ -18,8 +18,8 @@ class IndexedFileLines(AppBase):
     Attributes:
         id (int): Primary key.
         file_id (str): Foreign key to the associated file.
-        file_repo_name (str): Name of the repository the file belongs to.
-        file_repo_type (str): Type of the repository (e.g., git, svn).
+        file_source_name (str): Name of the repository the file belongs to.
+        file_source_type (str): Type of the repository (e.g., git, svn).
         line_number (int): Line number in the file.
         line_text (str): Text content of the line.
         embedding (Optional[List[float]]): Embedding vector for the line.
@@ -32,8 +32,8 @@ class IndexedFileLines(AppBase):
     file_id: Mapped[str] = mapped_column(
         ForeignKey("indexed_files.id"), nullable=False, index=True
     )
-    file_repo_name: Mapped[str] = mapped_column(String, nullable=False)
-    file_repo_type: Mapped[str] = mapped_column(String, nullable=False)
+    file_source_name: Mapped[str] = mapped_column(String, nullable=False)
+    file_source_type: Mapped[str] = mapped_column(String, nullable=False)
     line_number: Mapped[int] = mapped_column(Integer, nullable=False)
     line_text: Mapped[str] = mapped_column(Text, nullable=False)
     embedding: Mapped[Optional[List[float]]] = mapped_column(JSON, nullable=True)

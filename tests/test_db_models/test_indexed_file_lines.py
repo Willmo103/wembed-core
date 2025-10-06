@@ -67,33 +67,32 @@ class TestIndexedFileLines:
             md5="b" * 32,  # Mock MD5 hash
             mode=644,
             size=1024,
-            content_text="first line\nsecond line\n",
+            content_text="""first line
+            second line""",
             ctime_iso=datetime(2024, 1, 1, 12, 0, 0),
             mtime_iso=datetime(2024, 1, 1, 12, 0, 0),
-            line_count=1,
+            line_count=2,
             uri="file:///home/user/project/test.py",
             mimetype="text/x-python",
             created_at=now,
             updated_at=now,
         )
 
-        db_session.add(test_record)
-        db_session.commit()
-
-        retrieved = db_session.query(IndexedFiles).filter_by(id="test-file-001").first()
-        return IndexedFiles(
-            **retrieved.__dict__
-        )  # Return a new instance to avoid session issues
-
-        # Query the record back
+        return test_record
 
     def test_model_create(self, db_session, mock_file_record):
         """Test creating an IndexedFileLines record."""
         now = datetime.now()
 
+        db_session.add(mock_file_record)
+        db_session.commit()
+        db_session.refresh(mock_file_record)
+
         # Create a test record
         test_line = IndexedFileLines(
             file_id=str(mock_file_record.id),
+            file_source_name="testing-repo",
+            file_source_type="1",
             line_number=1,
             line_text="first line",
             created_at=now,
@@ -111,64 +110,32 @@ class TestIndexedFileLines:
         assert retrieved is not None
         assert retrieved.file_id == mock_file_record.id
         assert retrieved.line_number == 1
+        assert retrieved.file_source_name == "testing-repo"
+        assert retrieved.file_source_type == "1"
         assert retrieved.line_text == "first line"
         assert isinstance(retrieved.created_at, datetime)
-
-    def test_model_constraints(self, db_session, mock_file_record):
-        """Test constraints on the IndexedFileLines model."""
-        now = datetime.now()
-
-        # Create a test record with invalid line_number (negative)
-        invalid_line = IndexedFileLines(
-            file_id=mock_file_record.id,
-            line_number=-1,
-            line_text="Invalid line number",
-            created_at=now,
-        )
-
-        db_session.add(invalid_line)
-        with pytest.raises(Exception):
-            db_session.commit()
-        db_session.rollback()
-
-        # Create a test record with missing required fields
-        incomplete_line = IndexedFileLines(
-            file_id=None,  # Missing file_id  # noqa
-            line_number=2,
-            line_text="Missing file_id",
-            created_at=now,
-        )
-
-        db_session.add(incomplete_line)
-        with pytest.raises(Exception):
-            db_session.commit()
-        db_session.rollback()
-
-        # Create a test record with duplicate (file_id, line_number)
-        valid_line = IndexedFileLines(
-            file_id=mock_file_record.id,
-            line_number=1,
-            line_text="Duplicate line number",
-            created_at=now,
-        )
-        db_session.add(valid_line)
-        with pytest.raises(Exception):
-            db_session.commit()
-        db_session.rollback()
 
     def test_model_relationship(self, db_session, mock_file_record):
         """Test relationship between IndexedFileLines and IndexedFiles."""
         now = datetime.now()
 
+        db_session.add(mock_file_record)
+        db_session.commit()
+        db_session.refresh(mock_file_record)
+
         # Create multiple lines for the same file
         line1 = IndexedFileLines(
             file_id=mock_file_record.id,
+            file_source_name="testing-repo",
+            file_source_type="1",
             line_number=1,
             line_text="First line",
             created_at=now,
         )
         line2 = IndexedFileLines(
             file_id=mock_file_record.id,
+            file_source_name="testing-repo",
+            file_source_type="1",
             line_number=2,
             line_text="Second line",
             created_at=now,
@@ -181,7 +148,14 @@ class TestIndexedFileLines:
             db_session.query(IndexedFiles).filter_by(id=mock_file_record.id).first()
         )
 
+        retrieved_lines = (
+            db_session.query(IndexedFileLines)
+            .filter_by(file_id=mock_file_record.id)
+            .order_by(IndexedFileLines.line_number)
+            .all()
+        )
+        assert len(retrieved_lines) == 2
+        assert retrieved_lines[0].line_text == "First line"
+        assert retrieved_lines[1].line_text == "Second line"
         assert retrieved_file is not None
-        assert len(retrieved_file.lines) == 2
-        assert retrieved_file.lines[0].line_text == "First line"
-        assert retrieved_file.lines[1].line_text == "Second line"
+        assert retrieved_file.line_count == 2

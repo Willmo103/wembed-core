@@ -79,14 +79,8 @@ class TestScanResultRecord:
         # Close the session
         db_session.close()
 
-    def test_nullable_fields(self, config):
+    def test_nullable_fields(self, db_session):
         """Test that nullable fields can be set to None."""
-        db_service = DatabaseService(config)
-        db_service.init_db()
-
-        # Create a new database session
-        session_gen = db_service.get_db()
-        session = next(session_gen)
 
         # Create a new FileIndexResult with nullable fields set to None
         scan_result = FileIndexingResults(
@@ -103,11 +97,13 @@ class TestScanResultRecord:
             host="testhost",
         )
 
-        session.add(scan_result)
-        session.commit()
+        db_session.add(scan_result)
+        db_session.commit()
 
         # Retrieve the FileIndexResult
-        retrieved = session.query(FileIndexingResults).filter_by(id="scan124").first()
+        retrieved = (
+            db_session.query(FileIndexingResults).filter_by(id="scan124").first()
+        )
 
         assert retrieved is not None
         assert retrieved.id == "scan124"
@@ -118,4 +114,4 @@ class TestScanResultRecord:
         assert retrieved.options is None
 
         # Close the session
-        session.close()
+        db_session.close()

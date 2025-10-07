@@ -15,16 +15,16 @@ class TestDLSchemas:
         chunk_data = {
             "id": 1,
             "document_id": 10,
-            "idx": 0,
-            "text_chunk": "This is a test chunk.",
+            "chunk_index": 0,
+            "chunk_text": "This is a test chunk.",
             "embedding": [0.1, 0.2, 0.3],
             "created_at": datetime(2024, 1, 1, tzinfo=timezone.utc),
         }
         chunk = DLChunkSchema(**chunk_data)
         assert chunk.id == 1
         assert chunk.document_id == 10
-        assert chunk.idx == 0
-        assert chunk.text_chunk == "This is a test chunk."
+        assert chunk.chunk_index == 0
+        assert chunk.chunk_text == "This is a test chunk."
         assert chunk.embedding == [0.1, 0.2, 0.3]
         assert chunk.created_at == datetime(2024, 1, 1, tzinfo=timezone.utc)
 
@@ -63,7 +63,6 @@ class TestDLSchemas:
         """Test DLInputSchema creation and attribute access."""
         input_data = {
             "id": 3,
-            "source": "input_source",
             "source_ref": "ref_456",
             "source_type": "url",
             "status": 200,
@@ -74,7 +73,6 @@ class TestDLSchemas:
         }
         dl_input = DLInputSchema(**input_data)
         assert dl_input.id == 3
-        assert dl_input.source == "input_source"
         assert dl_input.source_ref == "ref_456"
         assert dl_input.source_type == "url"
         assert dl_input.status == 200

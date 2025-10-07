@@ -26,7 +26,7 @@ class DLChunks(AppBase):
         ForeignKey("dl_documents.id"), nullable=False, index=True
     )
     chunk_index: Mapped[int] = mapped_column(Integer, nullable=False, index=True)
-    text_chunk: Mapped[str] = mapped_column(Text, nullable=False, index=True)
+    chunk_text: Mapped[str] = mapped_column(Text, nullable=False, index=True)
     embedding: Mapped[List[float]] = mapped_column(JSON, nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),

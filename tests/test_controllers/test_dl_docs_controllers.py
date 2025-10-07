@@ -73,7 +73,6 @@ class TestDLControllers:
     def sample_input_schema(self) -> DLInputSchema:
         """Provides a sample DLInputSchema object for testing."""
         return DLInputSchema(
-            source="test_source_001",
             source_ref="test_ref_001",
             source_type="test",
             status=100,
@@ -95,8 +94,8 @@ class TestDLControllers:
 
     def test_create_and_get_input(
         self,
-        dl_input_controller: DLInputController,
-        sample_input_schema: DLInputSchema,
+        dl_input_controller,
+        sample_input_schema,
     ):
         """Tests basic creation and retrieval of a DLInput record."""
         # Create
@@ -112,7 +111,7 @@ class TestDLControllers:
 
     def test_create_and_get_document(
         self,
-        dl_document_controller: DLDocumentController,
+        dl_document_controller,
         sample_document_schema: DLDocumentSchema,
     ):
         """Tests basic creation and retrieval of a DLDocument record."""
@@ -130,7 +129,7 @@ class TestDLControllers:
     def test_full_relationship_flow(
         self,
         dl_input_controller: DLInputController,
-        dl_document_controller: DLDocumentController,
+        dl_document_controller,
         dl_chunk_controller: DLChunkController,
     ):
         """
@@ -156,7 +155,7 @@ class TestDLControllers:
             text="Workflow",
         )
         created_doc = dl_document_controller.create(doc_schema)
-        assert created_doc.source_ref == str(created_input.id)
+        assert created_doc.source_ref == created_input.id
 
         # 3. Update the Input to link to the new Document and mark as processed
         updated_input_schema = DLInputSchema.model_validate(created_input)
@@ -174,7 +173,7 @@ class TestDLControllers:
             DLChunkSchema(
                 document_id=created_doc.id,
                 chunk_index=i,
-                text_chunk=f"This is chunk {i}",
+                chunk_text=f"This is chunk {i}",
                 embedding=[0.1 * i] * 8,
             )
             for i in range(3)
@@ -186,12 +185,12 @@ class TestDLControllers:
         retrieved_chunks = dl_chunk_controller.get_by_document_id(created_doc.id)
         assert len(retrieved_chunks) == 3
         assert retrieved_chunks[0].chunk_index == 0
-        assert retrieved_chunks[1].text_chunk == "This is chunk 1"
+        assert retrieved_chunks[1].chunk_text == "This is chunk 1"
         assert retrieved_chunks[2].document_id == created_doc.id
 
     def test_delete_operations(
         self,
-        dl_document_controller: DLDocumentController,
+        dl_document_controller,
         dl_chunk_controller: DLChunkController,
     ):
         """Tests deletion logic, particularly deleting chunks by document ID."""
@@ -209,8 +208,8 @@ class TestDLControllers:
         chunk_schemas = [
             DLChunkSchema(
                 document_id=created_doc.id,
-                idx=i,  # <-- FIX: Changed from chunk_index to idx
-                text_chunk=f"Chunk {i}",
+                chunk_index=i,
+                chunk_text=f"Chunk {i}",
                 embedding=[0.1] * 8,
             )
             for i in range(5)

@@ -98,7 +98,7 @@ class TestDLModels:
             id=1,
             document_id=1,
             chunk_index=0,
-            text_chunk="This is a test chunk.",
+            chunk_text="This is a test chunk.",
             embedding=[0.1] * 768,  # Mock embedding vector
             created_at=datetime.now(timezone.utc),
         )
@@ -108,7 +108,7 @@ class TestDLModels:
         assert chunk_record.id == 1
         assert chunk_record.document_id == 1
         assert chunk_record.chunk_index == 0
-        assert chunk_record.text_chunk == "This is a test chunk."
+        assert chunk_record.chunk_text == "This is a test chunk."
         assert len(chunk_record.embedding) == 768
 
     def test_relationships(self, db_session, config):
@@ -154,7 +154,7 @@ class TestDLModels:
             id=1,
             document_id=doc_record.id,
             chunk_index=0,
-            text_chunk="This is a test chunk.",
+            chunk_text="This is a test chunk.",
             embedding=[0.1] * 768,  # Mock embedding vector
             created_at=datetime.now(timezone.utc),
         )
@@ -168,6 +168,6 @@ class TestDLModels:
         assert input_record.id == 1
         assert doc_record.id == 1
         assert chunk_record.id == 1
-        assert chunk_record.text_chunk == "This is a test chunk."
+        assert chunk_record.chunk_text == "This is a test chunk."
         assert doc_record.markdown == "# Test Document"
         assert input_record.status == 100

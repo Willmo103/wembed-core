@@ -2,6 +2,7 @@
 SQLAlchemy setup and database service for the application.
 """
 
+import contextlib
 from typing import Generator
 
 from sqlalchemy.orm import Session, declarative_base
@@ -53,6 +54,7 @@ class DatabaseService:
         AppBase.metadata.create_all(bind=self.engine)
         self.is_initialized = True
 
+    @contextlib.contextmanager
     def get_db(self) -> "Generator[Session, None, None]":
         """
         Provide a database session for use in application code.

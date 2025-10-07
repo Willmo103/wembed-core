@@ -40,12 +40,8 @@ class TestDLModels:
     @pytest.fixture
     def db_session(self, db_service):
         """Fixture providing a database session."""
-        session_gen = db_service.get_db()
-        session = next(session_gen)
-        try:
+        with db_service.get_db() as session:
             yield session
-        finally:
-            session.close()
 
     def test_dl_models_crud(self, db_session, config):
         """Test CRUD operations for DL models."""

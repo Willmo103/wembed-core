@@ -37,10 +37,8 @@ class TestIndexedReposModel:
     @pytest.fixture
     def db_session(self, db_service):
         """Fixture providing a database session."""
-        session_gen = db_service.get_db()
-        session = next(session_gen)
-        yield session
-        session.close()
+        with db_service.get_db() as session:
+            yield session
 
     @pytest.fixture
     def valid_repo(self, config):

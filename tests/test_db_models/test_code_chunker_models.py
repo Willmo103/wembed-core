@@ -48,12 +48,8 @@ class TestCodeChunkerModels:
     @pytest.fixture
     def db_session(self, db_service: DatabaseService):
         """Fixture providing a database session."""
-        session_gen = db_service.get_db()
-        session = next(session_gen)
-        try:
+        with db_service.get_db() as session:
             yield session
-        finally:
-            session.close()
 
     def test_git_commit_crud(self, db_session: Session):
         """Tests CRUD for the CodeChunkerGitCommits model."""

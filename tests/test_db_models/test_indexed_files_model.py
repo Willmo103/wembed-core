@@ -38,10 +38,8 @@ class TestDatabaseAndFileRecord:
     @pytest.fixture
     def db_session(self, db_service):
         """Fixture providing a database session."""
-        session_gen = db_service.get_db()
-        session = next(session_gen)
-        yield session
-        session.close()
+        with db_service.get_db() as session:
+            yield session
 
     def test_database_initialization(self, config):
         """Test that DatabaseService initializes correctly."""
@@ -66,7 +64,8 @@ class TestDatabaseAndFileRecord:
         db_service = DatabaseService(config)
 
         with pytest.raises(Exception) as excinfo:
-            next(db_service.get_db())
+            with db_service.get_db() as session:
+                pass
 
         assert "Database not initialized" in str(excinfo.value)
 
@@ -184,17 +183,12 @@ class TestDatabaseAndFileRecord:
             db_session.commit()
 
     def test_database_session_generator(self, db_service):
-        """Test that get_db() provides a working session generator."""
-        session_gen = db_service.get_db()
-        session = next(session_gen)
-
-        assert session is not None
-
-        # Verify we can use the session
-        result = session.query(IndexedFiles).all()
-        assert isinstance(result, list)
-
-        session.close()
+        """Test that get_db() provides a working session context."""
+        with db_service.get_db() as session:  # <-- Use a 'with' statement
+            assert session is not None
+            # Verify we can use the session
+            result = session.query(IndexedFiles).all()
+            assert isinstance(result, list)
 
     def test_optional_content_field(self, db_session):
         """Test that the optional content field can be None or contain binary data."""

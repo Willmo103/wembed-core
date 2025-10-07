@@ -13,5 +13,5 @@ devtul md -f %project_version_fn_base%_src.md --sub-dir src/wembed_core --empty 
 devtul md -f %project_version_fn_base%_tests.md --sub-dir tests --empty %project_dir%
 devtul md -f %project_version_fn_base%_schemas.md --sub-dir src/wembed_core/schemas --empty %project_dir%
 devtul md -f %project_version_fn_base%_models.md --sub-dir src/wembed_core/models --empty %project_dir%
-@REM devtul md -f %project_version_fn_base%_controllers.md --sub-dir src/wembed_core/controllers --empty %project_dir%
+devtul md -f %project_version_fn_base%_controllers.md --sub-dir src/wembed_core/controllers --empty %project_dir%
 exit /b 0x0

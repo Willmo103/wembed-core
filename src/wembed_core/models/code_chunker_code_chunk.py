@@ -4,11 +4,11 @@ wembed_core.models.code_chunker_code_chunk
 SQLAlchemy model for code chunks.
 """
 
+import uuid
 from datetime import datetime, timezone
 from typing import Optional, Set
-import uuid
 
-from sqlalchemy import DateTime, Integer, String, Text, JSON
+from sqlalchemy import JSON, DateTime, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from ..database import AppBase
@@ -34,9 +34,7 @@ class CodeChunkerCodeChunks(AppBase):
 
     __tablename__ = "code_chunker_code_chunks"
 
-    id: Mapped[int] = mapped_column(
-        Integer, primary_key=True, autoincrement=True
-    )
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     chunk_uuid: Mapped[str] = mapped_column(
         String(36), default=lambda: str(uuid.uuid4()), unique=True, index=True
     )

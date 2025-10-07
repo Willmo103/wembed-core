@@ -5,7 +5,7 @@ SQLAlchemy model for Git file information.
 """
 
 from datetime import datetime, timezone
-from typing import List, Optional, Set
+from typing import Optional, Set
 
 from sqlalchemy import JSON, DateTime, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
@@ -34,9 +34,7 @@ class CodeChunkerGitFileInfo(AppBase):
 
     __tablename__ = "code_chunker_git_file_info"
 
-    id: Mapped[int] = mapped_column(
-        Integer, primary_key=True, autoincrement=True
-    )
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     file_path: Mapped[str] = mapped_column(String, nullable=False, index=True)
     last_commit_hash: Mapped[str] = mapped_column(String(40), nullable=False)
     last_author: Mapped[str] = mapped_column(String, nullable=False)

@@ -67,20 +67,19 @@ class GitBranchSchema(BaseModel):
         arbitrary_types_allowed = True
 
 
-class DependencyNode(BaseModel):
-    """Represents a dependency in the dependency graph"""
+# In wembed_core/schemas/code_chunker.py
 
+
+class DependencyNode(BaseModel):
     name: str
-    version: Optional[str]
-    source: str  # 'stdlib', 'local', 'external'
-    file_path: Optional[str]
+    version: Optional[str] = None
+    source: str
+    file_path: Optional[str] = None
     used_by: Set[str]
     imports: Set[str]
     is_used: bool = False
 
     class Config:
-        """Pydantic configuration"""
-
         from_attributes = True
 
 

@@ -112,9 +112,9 @@ class CodeChunk(BaseModel):
     dependencies: Set[str] = set()
     docstring: Optional[str] = None
 
-    def __post_init__(self):
-        if self.dependencies is None:
-            self.dependencies = set()
+    # def __post_init__(self):
+    #     if self.dependencies is None:
+    #         self.dependencies = set()
 
     class Config:
         """Pydantic configuration"""

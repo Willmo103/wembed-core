@@ -28,19 +28,13 @@ class DLDocumentController:
     def get_by_id(self, doc_id: int) -> Optional[DLDocuments]:
         """Retrieves a document by its ID."""
         with self.db_service.get_db() as session:
-            return (
-                session.query(DLDocuments)
-                .filter(DLDocuments.id == doc_id)
-                .first()
-            )
+            return session.query(DLDocuments).filter(DLDocuments.id == doc_id).first()
 
     def get_by_source(self, source: str) -> Optional[DLDocuments]:
         """Retrieves a document by its source path/URL."""
         with self.db_service.get_db() as session:
             return (
-                session.query(DLDocuments)
-                .filter(DLDocuments.source == source)
-                .first()
+                session.query(DLDocuments).filter(DLDocuments.source == source).first()
             )
 
     def get_all(self, skip: int = 0, limit: int = 100) -> List[DLDocuments]:
@@ -48,15 +42,11 @@ class DLDocumentController:
         with self.db_service.get_db() as session:
             return session.query(DLDocuments).offset(skip).limit(limit).all()
 
-    def update(
-        self, doc_id: int, document: DLDocumentSchema
-    ) -> Optional[DLDocuments]:
+    def update(self, doc_id: int, document: DLDocumentSchema) -> Optional[DLDocuments]:
         """Updates an existing document."""
         with self.db_service.get_db() as session:
             db_record = (
-                session.query(DLDocuments)
-                .filter(DLDocuments.id == doc_id)
-                .first()
+                session.query(DLDocuments).filter(DLDocuments.id == doc_id).first()
             )
             if db_record:
                 update_data = document.model_dump(exclude_unset=True)
@@ -71,9 +61,7 @@ class DLDocumentController:
         """Deletes a document by its ID."""
         with self.db_service.get_db() as session:
             db_record = (
-                session.query(DLDocuments)
-                .filter(DLDocuments.id == doc_id)
-                .first()
+                session.query(DLDocuments).filter(DLDocuments.id == doc_id).first()
             )
             if db_record:
                 session.delete(db_record)

@@ -37,9 +37,7 @@ class DLChunkController:
     def get_by_id(self, chunk_id: int) -> Optional[DLChunks]:
         """Retrieves a chunk by its ID."""
         with self.db_service.get_db() as session:
-            return (
-                session.query(DLChunks).filter(DLChunks.id == chunk_id).first()
-            )
+            return session.query(DLChunks).filter(DLChunks.id == chunk_id).first()
 
     def get_by_document_id(self, document_id: int) -> List[DLChunks]:
         """Retrieves all chunks for a given document ID."""

@@ -28,9 +28,7 @@ class IndexedFileController:
         """Retrieves a file record by its ID."""
         with self.db_service.get_db() as session:
             return (
-                session.query(IndexedFiles)
-                .filter(IndexedFiles.id == file_id)
-                .first()
+                session.query(IndexedFiles).filter(IndexedFiles.id == file_id).first()
             )
 
     def get_by_sha256(self, sha256: str) -> Optional[IndexedFiles]:

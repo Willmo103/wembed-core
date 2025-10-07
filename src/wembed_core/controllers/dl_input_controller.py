@@ -27,25 +27,17 @@ class DLInputController:
     def get_by_id(self, input_id: int) -> Optional[DLInputs]:
         """Retrieves an input record by its ID."""
         with self.db_service.get_db() as session:
-            return (
-                session.query(DLInputs).filter(DLInputs.id == input_id).first()
-            )
+            return session.query(DLInputs).filter(DLInputs.id == input_id).first()
 
     def get_by_status(self, status: int) -> List[DLInputs]:
         """Retrieves input records by their status."""
         with self.db_service.get_db() as session:
-            return (
-                session.query(DLInputs).filter(DLInputs.status == status).all()
-            )
+            return session.query(DLInputs).filter(DLInputs.status == status).all()
 
-    def update(
-        self, input_id: int, input_data: DLInputSchema
-    ) -> Optional[DLInputs]:
+    def update(self, input_id: int, input_data: DLInputSchema) -> Optional[DLInputs]:
         """Updates an existing input record."""
         with self.db_service.get_db() as session:
-            db_record = (
-                session.query(DLInputs).filter(DLInputs.id == input_id).first()
-            )
+            db_record = session.query(DLInputs).filter(DLInputs.id == input_id).first()
             if db_record:
                 update_data = input_data.model_dump(exclude_unset=True)
                 for key, value in update_data.items():

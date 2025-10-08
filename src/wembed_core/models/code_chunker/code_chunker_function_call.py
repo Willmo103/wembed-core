@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 from sqlalchemy import DateTime, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
-from ..database import AppBase
+from wembed_core.database import AppBase
 
 
 class CodeChunkerFunctionCalls(AppBase):

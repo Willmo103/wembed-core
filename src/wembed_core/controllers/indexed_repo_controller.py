@@ -22,35 +22,38 @@ class IndexedRepoController:
             session.add(db_record)
             session.commit()
             session.refresh(db_record)
-            return db_record
+        return db_record
 
     def get_by_id(self, repo_id: int) -> Optional[IndexedRepos]:
         """Retrieves a repository by its ID."""
         with self.db_service.get_db() as session:
-            return (
-                session.query(IndexedRepos).filter(IndexedRepos.id == repo_id).first()
-            )
+            res = session.query(IndexedRepos).filter(IndexedRepos.id == repo_id).first()
+        return res
 
     def get_by_name(self, name: str) -> Optional[IndexedRepos]:
         """Retrieves a repository by its name."""
         with self.db_service.get_db() as session:
-            return (
+            res = (
                 session.query(IndexedRepos)
                 .filter(IndexedRepos.repo_name == name)
                 .first()
             )
+        return res
 
     def get_all(self, skip: int = 0, limit: int = 100) -> List[IndexedRepos]:
         """Retrieves all repositories with pagination."""
         with self.db_service.get_db() as session:
-            return session.query(IndexedRepos).offset(skip).limit(limit).all()
+            res = session.query(IndexedRepos).offset(skip).limit(limit).all()
+        return res
 
     def delete(self, repo_id: int) -> bool:
         """Deletes a repository record by its ID."""
         with self.db_service.get_db() as session:
             db_record = self.get_by_id(repo_id)
-            if db_record:
+
+        if db_record:
+            with self.db_service.get_db() as session:
                 session.delete(db_record)
                 session.commit()
-                return True
-            return False
+            return True
+        return False

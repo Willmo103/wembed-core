@@ -6,7 +6,7 @@ from pydantic import BaseModel
 
 class IndexedObsidianVaultSchema(BaseModel):
     id: Optional[int] = None
-    name: str
+    vault_name: str
     host: str
     root_path: str
     files: Optional[List[str]] = None

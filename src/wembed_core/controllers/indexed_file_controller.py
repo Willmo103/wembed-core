@@ -22,32 +22,33 @@ class IndexedFileController:
             session.add(db_record)
             session.commit()
             session.refresh(db_record)
-            return db_record
+        return db_record
 
     def get_by_id(self, file_id: str) -> Optional[IndexedFiles]:
         """Retrieves a file record by its ID."""
         with self.db_service.get_db() as session:
-            return (
-                session.query(IndexedFiles).filter(IndexedFiles.id == file_id).first()
-            )
+            res = session.query(IndexedFiles).filter(IndexedFiles.id == file_id).first()
+        return res
 
     def get_by_sha256(self, sha256: str) -> Optional[IndexedFiles]:
         """Retrieves a file record by its SHA256 hash."""
         with self.db_service.get_db() as session:
-            return (
+            res = (
                 session.query(IndexedFiles)
                 .filter(IndexedFiles.sha256 == sha256)
                 .first()
             )
+        return res
 
     def get_by_source_name(self, source_name: str) -> List[IndexedFiles]:
         """Retrieves file records by the source name (e.g., repo name)."""
         with self.db_service.get_db() as session:
-            return (
+            res = (
                 session.query(IndexedFiles)
                 .filter(IndexedFiles.source_name == source_name)
                 .all()
             )
+        return res
 
     def update(
         self, file_id: str, file_data: IndexedFileSchema
@@ -61,14 +62,15 @@ class IndexedFileController:
                     setattr(db_record, key, value)
                 session.commit()
                 session.refresh(db_record)
-            return db_record
+        return db_record
 
     def delete(self, file_id: str) -> bool:
         """Deletes a file record by its ID."""
         with self.db_service.get_db() as session:
             db_record = self.get_by_id(file_id)
-            if db_record:
+        if db_record:
+            with self.db_service.get_db() as session:
                 session.delete(db_record)
                 session.commit()
-                return True
-            return False
+            return True
+        return False

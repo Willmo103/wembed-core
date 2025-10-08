@@ -22,17 +22,19 @@ class DLInputController:
             session.add(db_record)
             session.commit()
             session.refresh(db_record)
-            return db_record
+        return db_record
 
     def get_by_id(self, input_id: int) -> Optional[DLInputs]:
         """Retrieves an input record by its ID."""
         with self.db_service.get_db() as session:
-            return session.query(DLInputs).filter(DLInputs.id == input_id).first()
+            res = session.query(DLInputs).filter(DLInputs.id == input_id).first()
+        return res
 
     def get_by_status(self, status: int) -> List[DLInputs]:
         """Retrieves input records by their status."""
         with self.db_service.get_db() as session:
-            return session.query(DLInputs).filter(DLInputs.status == status).all()
+            res = session.query(DLInputs).filter(DLInputs.status == status).all()
+        return res
 
     def update(self, input_id: int, input_data: DLInputSchema) -> Optional[DLInputs]:
         """Updates an existing input record."""
@@ -44,4 +46,4 @@ class DLInputController:
                     setattr(db_record, key, value)
                 session.commit()
                 session.refresh(db_record)
-            return db_record
+        return db_record

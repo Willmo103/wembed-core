@@ -58,4 +58,4 @@ class DLChunkController:
                 .delete()
             )
             session.commit()
-            return deleted_count
+        return deleted_count

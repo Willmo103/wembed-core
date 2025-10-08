@@ -39,12 +39,8 @@ class TestIndexedFileLines:
     @pytest.fixture
     def db_session(self, db_service):
         """Fixture providing a database session."""
-        session_gen = db_service.get_db()
-        session = next(session_gen)
-        try:
+        with db_service.get_db() as session:
             yield session
-        finally:
-            session.close()
 
     @pytest.fixture
     def mock_file_record(self, db_session):
@@ -114,6 +110,7 @@ class TestIndexedFileLines:
         assert retrieved.file_source_type == "1"
         assert retrieved.line_text == "first line"
         assert isinstance(retrieved.created_at, datetime)
+        db_session.close()
 
     def test_model_relationship(self, db_session, mock_file_record):
         """Test relationship between IndexedFileLines and IndexedFiles."""
@@ -159,3 +156,4 @@ class TestIndexedFileLines:
         assert retrieved_lines[1].line_text == "Second line"
         assert retrieved_file is not None
         assert retrieved_file.line_count == 2
+        db_session.close()

@@ -23,24 +23,27 @@ class DLDocumentController:
             session.add(db_record)
             session.commit()
             session.refresh(db_record)
-            return db_record
+        return db_record
 
     def get_by_id(self, doc_id: int) -> Optional[DLDocuments]:
         """Retrieves a document by its ID."""
         with self.db_service.get_db() as session:
-            return session.query(DLDocuments).filter(DLDocuments.id == doc_id).first()
+            res = session.query(DLDocuments).filter(DLDocuments.id == doc_id).first()
+        return res
 
     def get_by_source(self, source: str) -> Optional[DLDocuments]:
         """Retrieves a document by its source path/URL."""
         with self.db_service.get_db() as session:
-            return (
+            res = (
                 session.query(DLDocuments).filter(DLDocuments.source == source).first()
             )
+        return res
 
     def get_all(self, skip: int = 0, limit: int = 100) -> List[DLDocuments]:
         """Retrieves all documents with pagination."""
         with self.db_service.get_db() as session:
-            return session.query(DLDocuments).offset(skip).limit(limit).all()
+            res = session.query(DLDocuments).offset(skip).limit(limit).all()
+        return res
 
     def update(self, doc_id: int, document: DLDocumentSchema) -> Optional[DLDocuments]:
         """Updates an existing document."""
@@ -55,16 +58,15 @@ class DLDocumentController:
                 db_record.updated_at = datetime.now(timezone.utc)
                 session.commit()
                 session.refresh(db_record)
-            return db_record
+        return db_record
 
     def delete(self, doc_id: int) -> bool:
         """Deletes a document by its ID."""
         with self.db_service.get_db() as session:
-            db_record = (
-                session.query(DLDocuments).filter(DLDocuments.id == doc_id).first()
-            )
-            if db_record:
+            db_record = self.get_by_id(doc_id)
+        if db_record:
+            with self.db_service.get_db() as session:
                 session.delete(db_record)
                 session.commit()
-                return True
-            return False
+            return True
+        return False

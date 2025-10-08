@@ -25,6 +25,7 @@ class IndexingResultSchema(BaseModel):
     class Config:
         """Pydantic configuration to allow ORM mode."""
 
+        exclude = {"total_files"}
         from_attributes = True
 
 

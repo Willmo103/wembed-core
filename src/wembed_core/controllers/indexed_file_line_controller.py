@@ -22,7 +22,7 @@ class IndexedFileLineController:
             session.add(db_record)
             session.commit()
             session.refresh(db_record)
-            return db_record
+        return db_record
 
     def create_batch(
         self, lines: List[IndexedFileLineSchema]
@@ -34,22 +34,23 @@ class IndexedFileLineController:
             session.commit()
             for record in db_records:
                 session.refresh(record)
-            return db_records
+        return db_records
 
     def get_by_file_id(self, file_id: str) -> List[IndexedFileLines]:
         """Retrieves all lines for a given file ID."""
         with self.db_service.get_db() as session:
-            return (
+            res = (
                 session.query(IndexedFileLines)
                 .filter(IndexedFileLines.file_id == file_id)
                 .order_by(IndexedFileLines.line_number)
                 .all()
             )
+        return res
 
     def get_lines_without_embeddings(self, file_id: str) -> List[IndexedFileLines]:
         """Retrieves all lines for a file that do not yet have an embedding."""
         with self.db_service.get_db() as session:
-            return (
+            res = (
                 session.query(IndexedFileLines)
                 .filter(
                     IndexedFileLines.file_id == file_id,
@@ -57,6 +58,7 @@ class IndexedFileLineController:
                 )
                 .all()
             )
+        return res
 
     def update_embedding(
         self, line_id: int, embedding: List[float]
@@ -72,7 +74,7 @@ class IndexedFileLineController:
                 db_record.embedding = embedding
                 session.commit()
                 session.refresh(db_record)
-            return db_record
+        return db_record
 
     def delete_by_file_id(self, file_id: str) -> int:
         """Deletes all lines associated with a file ID."""
@@ -83,4 +85,4 @@ class IndexedFileLineController:
                 .delete()
             )
             session.commit()
-            return deleted_count
+        return deleted_count

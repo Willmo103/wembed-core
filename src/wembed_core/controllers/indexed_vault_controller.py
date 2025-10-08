@@ -5,10 +5,8 @@ wembed_core/controllers/indexed_vault_controller.py
 from typing import List, Optional
 
 from wembed_core.database import DatabaseService
-from wembed_core.models.indexed_obsidian_vaults import IndexedObsidianVaults
-from wembed_core.schemas.indexed_obsidian_vault_schema import (
-    IndexedObsidianVaultSchema,
-)
+from wembed_core.models.indexing.indexed_obsidian_vaults import IndexedObsidianVaults
+from wembed_core.schemas.indexing_schemas import IndexedObsidianVaultSchema
 
 
 class IndexedVaultController:

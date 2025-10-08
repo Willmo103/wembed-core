@@ -9,7 +9,6 @@ from datetime import datetime, timezone
 from unittest.mock import Mock
 
 import pytest
-from sqlalchemy.orm.session import Session
 
 from wembed_core.config import AppConfig
 from wembed_core.controllers import (
@@ -18,7 +17,7 @@ from wembed_core.controllers import (
     DLInputController,
 )
 from wembed_core.database import DatabaseService
-from wembed_core.schemas.dl_schemas import (
+from wembed_core.schemas import (
     DLChunkSchema,
     DLDocumentSchema,
     DLInputSchema,
@@ -48,7 +47,6 @@ class TestDLControllers:
     def db_session(self, db_service: DatabaseService):
         """Fixture providing a database session."""
 
-        # NEW, CORRECT WAY:
         with db_service.get_db() as session:
             yield session
 

@@ -12,7 +12,7 @@ from docling_core.types.doc.document import DoclingDocument
 from sqlalchemy import JSON, DateTime, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
-from ..database import AppBase
+from wembed_core.database import AppBase
 
 
 class DLDocuments(AppBase):

@@ -3,12 +3,12 @@ tests/test_indexed_file_schemas.py
 Pytest tests for HostFileSchema Pydantic model.
 """
 
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 
 import pytest
 from pydantic import ValidationError
 
-from wembed_core.schemas.indexed_file_schema import IndexedFileSchema
+from wembed_core.schemas import IndexedFileSchema
 
 
 class TestHostFileSchema:
@@ -128,7 +128,7 @@ class TestHostFileSchema:
 
     def test_schema_from_orm_compatibility(self):
         """Test that schema can be created from ORM model (from_attributes=True)."""
-        from wembed_core.models.indexed_files import IndexedFiles
+        from wembed_core.models.indexing.indexed_files import IndexedFiles
 
         # Create a mock ORM object
         now = datetime.now(timezone.utc)

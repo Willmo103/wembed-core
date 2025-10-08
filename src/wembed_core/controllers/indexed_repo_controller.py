@@ -5,8 +5,8 @@ wembed_core/controllers/indexed_repo_controller.py
 from typing import List, Optional
 
 from wembed_core.database import DatabaseService
-from wembed_core.models.indexed_repos import IndexedRepos
-from wembed_core.schemas.indexed_repo_schema import IndexedRepoSchema
+from wembed_core.models.indexing.indexed_repos import IndexedRepos
+from wembed_core.schemas.indexing_schemas import IndexedRepoSchema
 
 
 class IndexedRepoController:

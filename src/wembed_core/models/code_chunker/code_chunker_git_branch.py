@@ -10,7 +10,7 @@ from typing import Optional
 from sqlalchemy import Boolean, DateTime, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
 
-from ..database import AppBase
+from wembed_core.database import AppBase
 
 
 class CodeChunkerGitBranches(AppBase):

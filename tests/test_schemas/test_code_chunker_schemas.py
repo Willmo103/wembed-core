@@ -5,7 +5,7 @@ import uuid
 import pytest
 from pydantic_core import ValidationError
 
-from wembed_core.schemas.code_chunker import (
+from wembed_core.schemas import (
     CodeChunk,
     DependencyNode,
     FunctionCall,

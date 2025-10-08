@@ -9,7 +9,7 @@ from typing import List, Optional
 from sqlalchemy import JSON, DateTime, Float, String
 from sqlalchemy.orm import Mapped, mapped_column
 
-from ..database import AppBase
+from wembed_core.database import AppBase
 
 
 class FileIndexingResults(AppBase):

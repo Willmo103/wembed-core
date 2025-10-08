@@ -5,8 +5,8 @@ wembed_core/controllers/indexed_file_line_controller.py
 from typing import List, Optional
 
 from wembed_core.database import DatabaseService
-from wembed_core.models.indexed_file_lines import IndexedFileLines
-from wembed_core.schemas.indexed_file_line_schema import IndexedFileLineSchema
+from wembed_core.models.indexing.indexed_file_lines import IndexedFileLines
+from wembed_core.schemas.indexing_schemas import IndexedFileLineSchema
 
 
 class IndexedFileLineController:

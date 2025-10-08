@@ -5,8 +5,8 @@ wembed_core/controllers/scan_result_controller.py
 from typing import List, Optional
 
 from wembed_core.database import DatabaseService
-from wembed_core.models.indexing_results import FileIndexingResults
-from wembed_core.schemas.indexing_result_schemas import IndexingResultSchema
+from wembed_core.models.indexing.indexing_results import FileIndexingResults
+from wembed_core.schemas.indexing_schemas import IndexingResultSchema
 
 
 class IndexingResultsController:

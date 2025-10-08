@@ -4,14 +4,13 @@ Unit tests for the IndexedFileLines SQLAlchemy model.
 """
 
 from datetime import datetime
-from unittest.mock import Mock
 
 import pytest
 
 from wembed_core.config import AppConfig
-from wembed_core.database import AppBase, DatabaseService
-from wembed_core.models.indexed_file_lines import IndexedFileLines
-from wembed_core.models.indexed_files import IndexedFiles
+from wembed_core.database import DatabaseService
+from wembed_core.models.indexing.indexed_file_lines import IndexedFileLines
+from wembed_core.models.indexing.indexed_files import IndexedFiles
 
 
 class TestIndexedFileLines:

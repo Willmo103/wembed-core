@@ -4,11 +4,10 @@ wembed_core/services/code_chunker_service.py
 Orchestrates the code chunking process for an indexed repository.
 """
 
-from typing import List
 
 from wembed_core.chunker.ast_chunker import ASTChunker
 from wembed_core.controllers import (
-    CodeChunkerCodeChunksController,  # Assumes this new controller exists
+    CodeChunkerCodeChunksController,
     IndexedFileController,
     IndexedRepoController,
 )

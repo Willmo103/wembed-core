@@ -19,7 +19,7 @@ from wembed_core.controllers import (
     IndexingResultsController,
 )
 from wembed_core.database import DatabaseService
-from wembed_core.schemas import (
+from wembed_core.schemas.indexing_schemas import (
     IndexedFileLineSchema,
     IndexedFileSchema,
     IndexedObsidianVaultSchema,

@@ -7,7 +7,7 @@ from typing import List, Optional
 
 from wembed_core.database import DatabaseService
 from wembed_core.models.dl_doc.dl_documents import DLDocuments
-from wembed_core.schemas.dl_schemas import DLDocumentSchema
+from wembed_core.schemas.dl_doc_schemas import DLDocumentSchema
 
 
 class DLDocumentController:

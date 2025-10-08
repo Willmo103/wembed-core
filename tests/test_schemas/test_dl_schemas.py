@@ -2,7 +2,7 @@ from datetime import datetime, timedelta, timezone
 
 import pytest
 
-from wembed_core.schemas.dl_schemas import (
+from wembed_core.schemas import (
     DLChunkSchema,
     DLDocumentSchema,
     DLInputSchema,

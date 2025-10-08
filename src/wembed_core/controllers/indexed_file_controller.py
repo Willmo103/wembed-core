@@ -6,7 +6,7 @@ from typing import List, Optional
 
 from wembed_core.database import DatabaseService
 from wembed_core.models.indexing.indexed_files import IndexedFiles
-from wembed_core.schemas.indexed_file_schema import IndexedFileSchema
+from wembed_core.schemas.indexing_schemas import IndexedFileSchema
 
 
 class IndexedFileController:

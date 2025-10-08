@@ -8,7 +8,7 @@ from datetime import datetime, timezone
 import pytest
 from pydantic import ValidationError
 
-from wembed_core.schemas.indexed_file_schema import IndexedFileSchema
+from wembed_core.schemas import IndexedFileSchema
 
 
 class TestHostFileSchema:

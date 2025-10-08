@@ -9,7 +9,7 @@ from typing import List, Optional
 from sqlalchemy import JSON, DateTime, Float, String
 from sqlalchemy.orm import Mapped, mapped_column
 
-from ..database import AppBase
+from wembed_core.database import AppBase
 
 
 class FileIndexingResults(AppBase):
@@ -37,6 +37,7 @@ class FileIndexingResults(AppBase):
     scan_type: Mapped[str] = mapped_column(String, nullable=False, index=True)
     scan_name: Mapped[Optional[str]] = mapped_column(String, nullable=True)
     files: Mapped[Optional[List[str]]] = mapped_column(JSON, nullable=True)
+    total_files: Mapped[Optional[int]] = mapped_column(Float, nullable=True)
     scan_start: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False
     )
@@ -47,3 +48,10 @@ class FileIndexingResults(AppBase):
     options: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
     user: Mapped[str] = mapped_column(String, nullable=False)
     host: Mapped[str] = mapped_column(String, nullable=False)
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        if self.files is not None:
+            self.total_files = len(self.files)
+        else:
+            self.total_files = 0

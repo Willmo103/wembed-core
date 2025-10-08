@@ -8,8 +8,8 @@ from datetime import datetime
 import pytest
 
 from wembed_core.config import AppConfig
-from wembed_core.database import AppBase, DatabaseService
-from wembed_core.models.indexing_results import FileIndexingResults
+from wembed_core.database import DatabaseService
+from wembed_core.models.indexing.indexing_results import FileIndexingResults
 
 
 class TestScanResultRecord:
@@ -26,14 +26,21 @@ class TestScanResultRecord:
         config.debug = True
         return config
 
-    def test_scan_result_record_creation(self, config):
-        """Test creating and retrieving a FileIndexResult."""
-        db_service = DatabaseService(config)
-        db_service.init_db()
+    @pytest.fixture
+    def db_service(self, config):
+        """Fixture providing initialized DatabaseService."""
+        service = DatabaseService(config)
+        service.init_db()
+        return service
 
-        # Create a new database session
-        session_gen = db_service.get_db()
-        session = next(session_gen)
+    @pytest.fixture
+    def db_session(self, db_service):
+        """Fixture providing a database session."""
+        with db_service.get_db() as session:
+            yield session
+
+    def test_scan_result_record_creation(self, config, db_session):
+        """Test creating and retrieving a FileIndexResult."""
 
         # Create a new FileIndexResult
         scan_result = FileIndexingResults(
@@ -50,11 +57,13 @@ class TestScanResultRecord:
             host="testhost",
         )
 
-        session.add(scan_result)
-        session.commit()
+        db_session.add(scan_result)
+        db_session.commit()
 
         # Retrieve the FileIndexResult
-        retrieved = session.query(FileIndexingResults).filter_by(id="scan123").first()
+        retrieved = (
+            db_session.query(FileIndexingResults).filter_by(id="scan123").first()
+        )
 
         assert retrieved is not None
         assert retrieved.id == "scan123"
@@ -62,22 +71,18 @@ class TestScanResultRecord:
         assert retrieved.scan_type == "full"
         assert retrieved.scan_name == "Repo"
         assert retrieved.files == ["/path/to/scan/file1.txt", "/path/to/scan/file2.txt"]
+        assert retrieved.total_files == 2
+        assert retrieved.scan_start is not None
         assert retrieved.duration == 300.0
         assert retrieved.options == {"recursive": True, "follow_symlinks": False}
         assert retrieved.user == "testuser"
         assert retrieved.host == "testhost"
 
         # Close the session
-        session.close()
+        db_session.close()
 
-    def test_nullable_fields(self, config):
+    def test_nullable_fields(self, db_session):
         """Test that nullable fields can be set to None."""
-        db_service = DatabaseService(config)
-        db_service.init_db()
-
-        # Create a new database session
-        session_gen = db_service.get_db()
-        session = next(session_gen)
 
         # Create a new FileIndexResult with nullable fields set to None
         scan_result = FileIndexingResults(
@@ -94,11 +99,13 @@ class TestScanResultRecord:
             host="testhost",
         )
 
-        session.add(scan_result)
-        session.commit()
+        db_session.add(scan_result)
+        db_session.commit()
 
         # Retrieve the FileIndexResult
-        retrieved = session.query(FileIndexingResults).filter_by(id="scan124").first()
+        retrieved = (
+            db_session.query(FileIndexingResults).filter_by(id="scan124").first()
+        )
 
         assert retrieved is not None
         assert retrieved.id == "scan124"
@@ -109,4 +116,4 @@ class TestScanResultRecord:
         assert retrieved.options is None
 
         # Close the session
-        session.close()
+        db_session.close()

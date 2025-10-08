@@ -15,7 +15,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import Mapped, mapped_column
 
-from ..database import AppBase
+from wembed_core.database import AppBase
 
 
 class IndexedFiles(AppBase):

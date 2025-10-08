@@ -19,7 +19,7 @@ class TestIndexedRepoSchema:
         indexed_at = datetime.now(tz=timezone.utc) - timedelta(days=1)
         repo = IndexedRepoSchema(
             id=1,
-            name="test-repo",
+            repo_name="test-repo",
             host="github.com",
             root_path="/path/to/repo",
             files=["/path/to/repo/file1.txt", "/path/to/repo/file2.txt"],
@@ -27,7 +27,7 @@ class TestIndexedRepoSchema:
             indexed_at=indexed_at,
         )
         assert repo.id == 1
-        assert repo.name == "test-repo"
+        assert repo.repo_name == "test-repo"
         assert repo.host == "github.com"
         assert repo.root_path == "/path/to/repo"
         assert repo.files == ["/path/to/repo/file1.txt", "/path/to/repo/file2.txt"]
@@ -64,7 +64,7 @@ class TestIndexedRepoSchema:
     def test_optional_fields(self):
         """Test that optional fields can be omitted."""
         repo = IndexedRepoSchema(
-            name="test-repo",
+            repo_name="test-repo",
             host="github.com",
             root_path="/path/to/repo",
             file_count=0,

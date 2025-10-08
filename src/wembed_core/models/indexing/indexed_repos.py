@@ -4,7 +4,7 @@ from typing import List, Optional
 from sqlalchemy import JSON, DateTime, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
 
-from ..database import AppBase
+from wembed_core.database import AppBase
 
 
 class IndexedRepos(AppBase):

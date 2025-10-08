@@ -38,10 +38,8 @@ class TestDatabaseAndFileRecord:
     @pytest.fixture
     def db_session(self, db_service):
         """Fixture providing a database session."""
-        session_gen = db_service.get_db()
-        session = next(session_gen)
-        yield session
-        session.close()
+        with db_service.get_db() as session:
+            yield session
 
     def test_database_initialization(self, config):
         """Test that DatabaseService initializes correctly."""
@@ -66,7 +64,8 @@ class TestDatabaseAndFileRecord:
         db_service = DatabaseService(config)
 
         with pytest.raises(Exception) as excinfo:
-            next(db_service.get_db())
+            with db_service.get_db() as session:
+                pass
 
         assert "Database not initialized" in str(excinfo.value)
 
@@ -113,6 +112,7 @@ class TestDatabaseAndFileRecord:
         assert retrieved.name == "test.py"
         assert retrieved.source_type == "git"
         assert retrieved.size == 1024
+        db_session.close()
 
     def test_unique_sha256_constraint(self, db_session):
         """Test that sha256 field enforces uniqueness."""
@@ -148,6 +148,7 @@ class TestDatabaseAndFileRecord:
 
         db_session.add(record1)
         db_session.commit()
+        db_session.close()
 
         # Attempt to create second record with same sha256
         record2 = IndexedFiles(
@@ -182,19 +183,15 @@ class TestDatabaseAndFileRecord:
         # Should raise an integrity error due to unique constraint
         with pytest.raises(Exception):  # SQLAlchemy will raise IntegrityError
             db_session.commit()
+        db_session.close()
 
     def test_database_session_generator(self, db_service):
-        """Test that get_db() provides a working session generator."""
-        session_gen = db_service.get_db()
-        session = next(session_gen)
-
-        assert session is not None
-
-        # Verify we can use the session
-        result = session.query(IndexedFiles).all()
-        assert isinstance(result, list)
-
-        session.close()
+        """Test that get_db() provides a working session context."""
+        with db_service.get_db() as session:  # <-- Use a 'with' statement
+            assert session is not None
+            # Verify we can use the session
+            result = session.query(IndexedFiles).all()
+            assert isinstance(result, list)
 
     def test_optional_content_field(self, db_session):
         """Test that the optional content field can be None or contain binary data."""
@@ -274,3 +271,4 @@ class TestDatabaseAndFileRecord:
             db_session.query(IndexedFiles).filter_by(id="binary-content-file").first()
         )
         assert retrieved_binary.content == binary_data
+        db_session.close()

@@ -48,12 +48,8 @@ class TestCodeChunkerModels:
     @pytest.fixture
     def db_session(self, db_service: DatabaseService):
         """Fixture providing a database session."""
-        session_gen = db_service.get_db()
-        session = next(session_gen)
-        try:
+        with db_service.get_db() as session:
             yield session
-        finally:
-            session.close()
 
     def test_git_commit_crud(self, db_session: Session):
         """Tests CRUD for the CodeChunkerGitCommits model."""
@@ -100,6 +96,7 @@ class TestCodeChunkerModels:
         assert retrieved is not None
         assert retrieved.total_commits == 10
         assert "Another Dev" in retrieved.contributors
+        db_session.close()
 
     def test_git_branch_crud(self, db_session: Session):
         """Tests CRUD for the CodeChunkerGitBranches model."""
@@ -118,6 +115,7 @@ class TestCodeChunkerModels:
         )
         assert retrieved is not None
         assert retrieved.is_current is True
+        db_session.close()
 
     def test_code_chunk_crud(self, db_session: Session):
         """Tests CRUD for the CodeChunkerCodeChunks model."""
@@ -141,6 +139,7 @@ class TestCodeChunkerModels:
         assert retrieved is not None
         assert retrieved.chunk_uuid == chunk_uuid
         assert retrieved.chunk_type == "function"
+        db_session.close()
 
     def test_dependency_node_crud(self, db_session: Session):
         """Tests CRUD for the CodeChunkerDependencyNodes model."""
@@ -160,6 +159,7 @@ class TestCodeChunkerModels:
         assert retrieved is not None
         assert retrieved.name == "pytest"
         assert retrieved.version == "8.4.2"
+        db_session.close()
 
     def test_import_statement_crud(self, db_session: Session):
         """Tests CRUD for the CodeChunkerImportStatements model."""
@@ -181,6 +181,7 @@ class TestCodeChunkerModels:
         assert retrieved is not None
         assert retrieved.module == "datetime"
         assert "timezone" in retrieved.names
+        db_session.close()
 
     def test_usage_node_crud(self, db_session: Session):
         """Tests CRUD for the CodeChunkerUsageNodes model."""
@@ -201,6 +202,7 @@ class TestCodeChunkerModels:
         assert retrieved is not None
         assert retrieved.identifier == "my_function"
         assert retrieved.complexity_score == 1
+        db_session.close()
 
     def test_function_call_crud(self, db_session: Session):
         """Tests CRUD for the CodeChunkerFunctionCalls model."""
@@ -220,3 +222,4 @@ class TestCodeChunkerModels:
         assert retrieved is not None
         assert retrieved.caller_function == "main"
         assert retrieved.called_function == "my_function"
+        db_session.close()

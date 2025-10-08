@@ -5,15 +5,14 @@ Unit tests for the DLInputs, DLDocuments, and DLChunks SQLAlchemy models.
 """
 
 from datetime import datetime, timedelta, timezone
-from unittest.mock import Mock
 
 import pytest
 
 from wembed_core import AppConfig
 from wembed_core.database import DatabaseService
-from wembed_core.models.dl_chunks import DLChunks
-from wembed_core.models.dl_documents import DLDocuments
-from wembed_core.models.dl_inputs import DLInputs
+from wembed_core.models.dl_doc.dl_chunks import DLChunks
+from wembed_core.models.dl_doc.dl_documents import DLDocuments
+from wembed_core.models.dl_doc.dl_inputs import DLInputs
 
 
 class TestDLModels:
@@ -40,12 +39,8 @@ class TestDLModels:
     @pytest.fixture
     def db_session(self, db_service):
         """Fixture providing a database session."""
-        session_gen = db_service.get_db()
-        session = next(session_gen)
-        try:
+        with db_service.get_db() as session:
             yield session
-        finally:
-            session.close()
 
     def test_dl_models_crud(self, db_session, config):
         """Test CRUD operations for DL models."""
@@ -94,6 +89,7 @@ class TestDLModels:
         assert doc_record.text == "test"
         assert doc_record.doctags is None
         assert doc_record.chunks_json is None
+        db_session.close()
 
     def test_dl_chunks_crud(self, db_session, config):
         """Test CRUD operations for DLChunks model."""
@@ -102,7 +98,7 @@ class TestDLModels:
             id=1,
             document_id=1,
             chunk_index=0,
-            text_chunk="This is a test chunk.",
+            chunk_text="This is a test chunk.",
             embedding=[0.1] * 768,  # Mock embedding vector
             created_at=datetime.now(timezone.utc),
         )
@@ -112,8 +108,9 @@ class TestDLModels:
         assert chunk_record.id == 1
         assert chunk_record.document_id == 1
         assert chunk_record.chunk_index == 0
-        assert chunk_record.text_chunk == "This is a test chunk."
+        assert chunk_record.chunk_text == "This is a test chunk."
         assert len(chunk_record.embedding) == 768
+        db_session.close()
 
     def test_relationships(self, db_session, config):
         """Test relationships between DLInputs, DLDocuments, and DLChunks."""
@@ -158,7 +155,7 @@ class TestDLModels:
             id=1,
             document_id=doc_record.id,
             chunk_index=0,
-            text_chunk="This is a test chunk.",
+            chunk_text="This is a test chunk.",
             embedding=[0.1] * 768,  # Mock embedding vector
             created_at=datetime.now(timezone.utc),
         )
@@ -172,6 +169,7 @@ class TestDLModels:
         assert input_record.id == 1
         assert doc_record.id == 1
         assert chunk_record.id == 1
-        assert chunk_record.text_chunk == "This is a test chunk."
+        assert chunk_record.chunk_text == "This is a test chunk."
         assert doc_record.markdown == "# Test Document"
         assert input_record.status == 100
+        db_session.close()

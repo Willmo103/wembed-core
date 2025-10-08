@@ -90,6 +90,7 @@ class TestDLModels:
         assert doc_record.text == "test"
         assert doc_record.doctags is None
         assert doc_record.chunks_json is None
+        db_session.close()
 
     def test_dl_chunks_crud(self, db_session, config):
         """Test CRUD operations for DLChunks model."""
@@ -110,6 +111,7 @@ class TestDLModels:
         assert chunk_record.chunk_index == 0
         assert chunk_record.chunk_text == "This is a test chunk."
         assert len(chunk_record.embedding) == 768
+        db_session.close()
 
     def test_relationships(self, db_session, config):
         """Test relationships between DLInputs, DLDocuments, and DLChunks."""
@@ -171,3 +173,4 @@ class TestDLModels:
         assert chunk_record.chunk_text == "This is a test chunk."
         assert doc_record.markdown == "# Test Document"
         assert input_record.status == 100
+        db_session.close()

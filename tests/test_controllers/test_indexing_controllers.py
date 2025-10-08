@@ -5,13 +5,13 @@ Tests for the indexing-related controllers, ensuring database
 functionalities for scan results, repos, vaults, and files.
 """
 
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta, timezone
 from unittest.mock import Mock
 
 import pytest
 
 from wembed_core.config import AppConfig
-from wembed_core.controllers import ScanResultController
+from wembed_core.controllers import IndexingResultsController
 from wembed_core.database import DatabaseService
 from wembed_core.schemas.indexing_result_schemas import IndexingResultSchema
 
@@ -40,14 +40,14 @@ class TestIndexingControllers:
     @pytest.fixture
     def scan_result_controller(
         self, db_service: DatabaseService
-    ) -> ScanResultController:
+    ) -> IndexingResultsController:
         """Fixture to provide an instance of the ScanResultController."""
-        return ScanResultController(db_service)
+        return IndexingResultsController(db_service)
 
     # endregion
 
     def test_scan_result_controller_crud(
-        self, scan_result_controller: ScanResultController, config: Mock
+        self, scan_result_controller: IndexingResultsController, config: Mock
     ):
         """Tests basic create, get, and delete for ScanResultController."""
         # 1. Create a Scan Result

@@ -75,6 +75,7 @@ class TestIndexedReposModel:
         ]
         assert retrieved.file_count == 2
         assert isinstance(retrieved.indexed_at, datetime)
+        db_session.close()
 
     def test_indexed_repo_missing_required_fields(self, db_session):
         """Test that missing required fields raise an exception."""
@@ -92,6 +93,7 @@ class TestIndexedReposModel:
             db_session.commit()
 
         assert "NOT NULL constraint failed" in str(excinfo.value)
+        db_session.close()
 
     def test_indexed_repo_nullable_fields(self, db_session):
         """Test that nullable fields can be set to None."""
@@ -116,3 +118,5 @@ class TestIndexedReposModel:
         assert retrieved.files is None
         assert retrieved.file_count == 0
         assert retrieved.indexed_at is None
+
+        db_session.close()

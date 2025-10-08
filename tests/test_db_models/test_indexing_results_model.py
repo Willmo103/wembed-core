@@ -71,6 +71,8 @@ class TestScanResultRecord:
         assert retrieved.scan_type == "full"
         assert retrieved.scan_name == "Repo"
         assert retrieved.files == ["/path/to/scan/file1.txt", "/path/to/scan/file2.txt"]
+        assert retrieved.total_files == 2
+        assert retrieved.scan_start is not None
         assert retrieved.duration == 300.0
         assert retrieved.options == {"recursive": True, "follow_symlinks": False}
         assert retrieved.user == "testuser"

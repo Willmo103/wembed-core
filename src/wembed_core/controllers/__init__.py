@@ -12,7 +12,7 @@ from .indexed_file_controller import IndexedFileController
 from .indexed_file_line_controller import IndexedFileLineController
 from .indexed_repo_controller import IndexedRepoController
 from .indexed_vault_controller import IndexedVaultController
-from .scan_result_controller import ScanResultController
+from .indexing_result_controller import IndexingResultsController
 
 __all__ = [
     "DLChunkController",
@@ -22,5 +22,5 @@ __all__ = [
     "IndexedFileLineController",
     "IndexedRepoController",
     "IndexedVaultController",
-    "ScanResultController",
+    "IndexingResultsController",
 ]

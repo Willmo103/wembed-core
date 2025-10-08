@@ -165,13 +165,9 @@ output-file = "flake8_report.txt"
 count = true
 statistics = true
 
-[tool.uv.sources]
-devtul = { git = "https://github.com/willmo103/devtul.git" }
-
 [dependency-groups]
 dev = [
     "black>=25.9.0",
-    "devtul",
     "flake8>=7.3.0",
     "isort>=6.0.1",
     "mypy>=1.18.2",

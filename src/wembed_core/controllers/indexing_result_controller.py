@@ -9,7 +9,7 @@ from wembed_core.models.indexing_results import FileIndexingResults
 from wembed_core.schemas.indexing_result_schemas import IndexingResultSchema
 
 
-class ScanResultController:
+class IndexingResultsController:
     """Controller for CRUD operations on FileIndexingResults."""
 
     def __init__(self, db_service: DatabaseService):
@@ -18,10 +18,7 @@ class ScanResultController:
     def create(self, scan_data: IndexingResultSchema) -> FileIndexingResults:
         """Creates a new scan result record."""
         with self.db_service.get_db() as session:
-            # The schema has 'name', but the model has 'scan_name'
             dump = scan_data.model_dump()
-            dump["scan_name"] = dump.pop("name", None)
-
             db_record = FileIndexingResults(**dump)
             session.add(db_record)
             session.commit()

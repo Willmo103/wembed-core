@@ -40,6 +40,7 @@ class TestIndexingResultsSchema:
         assert scan_result.scan_type == scan_data["scan_type"]
         assert scan_result.scan_name == scan_data["scan_name"]
         assert scan_result.files == scan_data["files"]
+        assert scan_result.total_files == 2
         assert scan_result.scan_start == scan_data["scan_start"]
         assert scan_result.scan_end == scan_data["scan_end"]
         assert scan_result.duration == scan_data["duration"]

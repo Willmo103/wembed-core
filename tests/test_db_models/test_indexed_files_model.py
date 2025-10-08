@@ -112,6 +112,7 @@ class TestDatabaseAndFileRecord:
         assert retrieved.name == "test.py"
         assert retrieved.source_type == "git"
         assert retrieved.size == 1024
+        db_session.close()
 
     def test_unique_sha256_constraint(self, db_session):
         """Test that sha256 field enforces uniqueness."""
@@ -147,6 +148,7 @@ class TestDatabaseAndFileRecord:
 
         db_session.add(record1)
         db_session.commit()
+        db_session.close()
 
         # Attempt to create second record with same sha256
         record2 = IndexedFiles(
@@ -181,6 +183,7 @@ class TestDatabaseAndFileRecord:
         # Should raise an integrity error due to unique constraint
         with pytest.raises(Exception):  # SQLAlchemy will raise IntegrityError
             db_session.commit()
+        db_session.close()
 
     def test_database_session_generator(self, db_service):
         """Test that get_db() provides a working session context."""
@@ -268,3 +271,4 @@ class TestDatabaseAndFileRecord:
             db_session.query(IndexedFiles).filter_by(id="binary-content-file").first()
         )
         assert retrieved_binary.content == binary_data
+        db_session.close()

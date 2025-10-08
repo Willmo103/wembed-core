@@ -5,7 +5,7 @@ wembed_core/controllers/indexed_file_controller.py
 from typing import List, Optional
 
 from wembed_core.database import DatabaseService
-from wembed_core.models.indexed_files import IndexedFiles
+from wembed_core.models.indexing.indexed_files import IndexedFiles
 from wembed_core.schemas.indexed_file_schema import IndexedFileSchema
 
 

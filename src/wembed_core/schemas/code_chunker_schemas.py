@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime
 from typing import List, Optional, Set
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class GitCommitSchema(BaseModel):
@@ -34,7 +34,7 @@ class GitFileInfoSchema(BaseModel):
     last_author: str
     last_modified: datetime
     total_commits: int
-    contributors: Set[str]
+    contributors: List[str]
     lines_added_total: int
     lines_removed_total: int
     creation_date: datetime
@@ -75,8 +75,8 @@ class DependencyNode(BaseModel):
     version: Optional[str] = None
     source: str
     file_path: Optional[str] = None
-    used_by: Set[str]
-    imports: Set[str]
+    used_by: List[str] = []
+    imports: List[str] = []
     is_used: bool = False
 
     class Config:
@@ -102,14 +102,17 @@ class ImportStatement(BaseModel):
 class CodeChunk(BaseModel):
     """Represents a chunk of code with metadata"""
 
-    id: uuid.UUID
+    id: int = Field(None, description="Database ID, assigned automatically")
+    chunk_uuid: str = Field(
+        default_factory=uuid.uuid4().hex, description="Unique UUID for the code chunk"
+    )
     content: str
     chunk_type: str  # 'function', 'class', 'method', 'import', 'module'
     file_path: str
     start_line: int
     end_line: int
     parent_id: Optional[str] = None
-    dependencies: Set[str] = set()
+    dependencies: List[str] = []
     docstring: Optional[str] = None
 
     # def __post_init__(self):
@@ -121,6 +124,9 @@ class CodeChunk(BaseModel):
 
         arbitrary_types_allowed = True
         from_attributes = True
+        json_encoders = {
+            set: list,
+        }
 
 
 class UsageNode(BaseModel):

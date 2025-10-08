@@ -24,14 +24,10 @@ class CodeChunkerCodeChunksController:
             session.refresh(db_record)
             return db_record
 
-    def create_batch(
-        self, chunks: List[CodeChunk]
-    ) -> List[CodeChunkerCodeChunks]:
+    def create_batch(self, chunks: List[CodeChunk]) -> List[CodeChunkerCodeChunks]:
         """Creates multiple chunk records in a batch."""
         with self.db_service.get_db() as session:
-            db_records = [
-                CodeChunkerCodeChunks(**c.model_dump()) for c in chunks
-            ]
+            db_records = [CodeChunkerCodeChunks(**c.model_dump()) for c in chunks]
             session.add_all(db_records)
             session.commit()
             for record in db_records:

@@ -15,14 +15,10 @@ class CodeChunkerUsageNodeController:
     def __init__(self, db_service: DatabaseService):
         self.db_service = db_service
 
-    def create_batch(
-        self, nodes: List[UsageNode]
-    ) -> List[CodeChunkerUsageNodes]:
+    def create_batch(self, nodes: List[UsageNode]) -> List[CodeChunkerUsageNodes]:
         """Creates a batch of usage node records."""
         with self.db_service.get_db() as session:
-            db_records = [
-                CodeChunkerUsageNodes(**n.model_dump()) for n in nodes
-            ]
+            db_records = [CodeChunkerUsageNodes(**n.model_dump()) for n in nodes]
             session.add_all(db_records)
             session.commit()
             for record in db_records:

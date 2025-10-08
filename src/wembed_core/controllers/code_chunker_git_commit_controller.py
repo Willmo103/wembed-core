@@ -33,14 +33,7 @@ class CodeChunkerGitCommitController:
                 .first()
             )
 
-    def get_all(
-        self, skip: int = 0, limit: int = 100
-    ) -> List[CodeChunkerGitCommits]:
+    def get_all(self, skip: int = 0, limit: int = 100) -> List[CodeChunkerGitCommits]:
         """Retrieves all commit records with pagination."""
         with self.db_service.get_db() as session:
-            return (
-                session.query(CodeChunkerGitCommits)
-                .offset(skip)
-                .limit(limit)
-                .all()
-            )
+            return session.query(CodeChunkerGitCommits).offset(skip).limit(limit).all()

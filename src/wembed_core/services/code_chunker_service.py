@@ -4,7 +4,6 @@ wembed_core/services/code_chunker_service.py
 Orchestrates the code chunking process for an indexed repository.
 """
 
-
 from wembed_core.chunker.ast_chunker import ASTChunker
 from wembed_core.controllers import (
     CodeChunkerCodeChunksController,
@@ -41,9 +40,7 @@ class CodeChunkerService:
             return 0
 
         # Get all files associated with this repository from the IndexedFiles table
-        files_to_process = self.file_controller.get_by_source_name(
-            repo.repo_name
-        )
+        files_to_process = self.file_controller.get_by_source_name(repo.repo_name)
 
         python_files = [f for f in files_to_process if f.path.endswith(".py")]
 
@@ -62,7 +59,5 @@ class CodeChunkerService:
                 self.chunk_controller.create_batch(code_chunks)
                 total_chunks_created += len(code_chunks)
 
-        print(
-            f"Finished processing. Created {total_chunks_created} total chunks."
-        )
+        print(f"Finished processing. Created {total_chunks_created} total chunks.")
         return total_chunks_created

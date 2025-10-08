@@ -15,14 +15,10 @@ class CodeChunkerFunctionCallController:
     def __init__(self, db_service: DatabaseService):
         self.db_service = db_service
 
-    def create_batch(
-        self, calls: List[FunctionCall]
-    ) -> List[CodeChunkerFunctionCalls]:
+    def create_batch(self, calls: List[FunctionCall]) -> List[CodeChunkerFunctionCalls]:
         """Creates a batch of function call records."""
         with self.db_service.get_db() as session:
-            db_records = [
-                CodeChunkerFunctionCalls(**c.model_dump()) for c in calls
-            ]
+            db_records = [CodeChunkerFunctionCalls(**c.model_dump()) for c in calls]
             session.add_all(db_records)
             session.commit()
             for record in db_records:

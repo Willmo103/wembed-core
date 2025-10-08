@@ -38,9 +38,7 @@ class ASTChunker:
             if isinstance(node, ast.FunctionDef):
                 chunks.append(self._create_function_chunk(node))
             elif isinstance(node, ast.ClassDef):
-                class_chunk, method_chunks = (
-                    self._create_class_and_method_chunks(node)
-                )
+                class_chunk, method_chunks = self._create_class_and_method_chunks(node)
                 chunks.append(class_chunk)
                 chunks.extend(method_chunks)
         return chunks

@@ -20,9 +20,7 @@ class CodeChunkerDependencyNodeController:
     ) -> List[CodeChunkerDependencyNodes]:
         """Creates a batch of dependency node records."""
         with self.db_service.get_db() as session:
-            db_records = [
-                CodeChunkerDependencyNodes(**n.model_dump()) for n in nodes
-            ]
+            db_records = [CodeChunkerDependencyNodes(**n.model_dump()) for n in nodes]
             session.add_all(db_records)
             session.commit()
             for record in db_records:

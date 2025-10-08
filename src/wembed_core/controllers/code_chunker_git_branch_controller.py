@@ -20,9 +20,7 @@ class CodeChunkerGitBranchController:
     ) -> List[CodeChunkerGitBranches]:
         """Creates or updates a batch of branch records."""
         with self.db_service.get_db() as session:
-            db_records = [
-                CodeChunkerGitBranches(**b.model_dump()) for b in branches
-            ]
+            db_records = [CodeChunkerGitBranches(**b.model_dump()) for b in branches]
             session.add_all(db_records)
             session.commit()
             for record in db_records:

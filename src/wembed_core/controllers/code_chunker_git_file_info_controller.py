@@ -15,9 +15,7 @@ class CodeChunkerGitFileInfoController:
     def __init__(self, db_service: DatabaseService):
         self.db_service = db_service
 
-    def create(
-        self, file_info_data: GitFileInfoSchema
-    ) -> CodeChunkerGitFileInfo:
+    def create(self, file_info_data: GitFileInfoSchema) -> CodeChunkerGitFileInfo:
         """Creates a new Git file info record."""
         with self.db_service.get_db() as session:
             db_record = CodeChunkerGitFileInfo(**file_info_data.model_dump())
@@ -26,9 +24,7 @@ class CodeChunkerGitFileInfoController:
             session.refresh(db_record)
             return db_record
 
-    def get_by_file_path(
-        self, file_path: str
-    ) -> Optional[CodeChunkerGitFileInfo]:
+    def get_by_file_path(self, file_path: str) -> Optional[CodeChunkerGitFileInfo]:
         """Retrieves a file info record by its path."""
         with self.db_service.get_db() as session:
             return (

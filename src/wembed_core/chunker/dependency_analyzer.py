@@ -1,11 +1,12 @@
 import ast
-from dataclasses import asdict
 import importlib
 import json
 import os
+from dataclasses import asdict
+from typing import Dict, List, Optional, Set
+
 from wembed_core.constants.stdlib_modules import STD_LIB_MODULES
 from wembed_core.schemas import DependencyNode, ImportStatement
-from typing import Dict, List, Optional, Set
 
 
 class DependencyAnalyzer:
@@ -27,8 +28,7 @@ class DependencyAnalyzer:
             dirs[:] = [
                 d
                 for d in dirs
-                if not d.startswith(".")
-                and d not in ["__pycache__", "node_modules"]
+                if not d.startswith(".") and d not in ["__pycache__", "node_modules"]
             ]
 
             for file in files:
@@ -37,9 +37,7 @@ class DependencyAnalyzer:
                     rel_path = os.path.relpath(file_path, self.project_root)
 
                     # Convert file path to module name
-                    module_name = rel_path.replace(os.sep, ".").replace(
-                        ".py", ""
-                    )
+                    module_name = rel_path.replace(os.sep, ".").replace(".py", "")
                     local_modules.add(module_name)
 
                     # Also add package names
@@ -104,9 +102,7 @@ class DependencyAnalyzer:
         # Analyze all Python files
         for root, dirs, files in os.walk(self.project_root):
             dirs[:] = [
-                d
-                for d in dirs
-                if not d.startswith(".") and d not in ["__pycache__"]
+                d for d in dirs if not d.startswith(".") and d not in ["__pycache__"]
             ]
 
             for file in files:
@@ -141,9 +137,7 @@ class DependencyAnalyzer:
                 version=version,
                 source=source,
                 file_path=(
-                    self._get_module_file_path(module)
-                    if source == "local"
-                    else None
+                    self._get_module_file_path(module) if source == "local" else None
                 ),
                 used_by=set(),
                 imports=set(),
@@ -238,9 +232,7 @@ class DependencyAnalyzer:
         """Export the dependency analysis to a JSON file"""
         export_data = {
             "project_root": self.project_root,
-            "dependencies": {
-                name: asdict(d) for name, d in self.dependencies.items()
-            },
+            "dependencies": {name: asdict(d) for name, d in self.dependencies.items()},
             "imports": [asdict(i) for i in self.imports],
         }
 
@@ -265,12 +257,8 @@ class DependencyAnalyzer:
         external_deps = [
             d for d in self.dependencies.values() if d.source == "external"
         ]
-        local_deps = [
-            d for d in self.dependencies.values() if d.source == "local"
-        ]
-        stdlib_deps = [
-            d for d in self.dependencies.values() if d.source == "stdlib"
-        ]
+        local_deps = [d for d in self.dependencies.values() if d.source == "local"]
+        stdlib_deps = [d for d in self.dependencies.values() if d.source == "stdlib"]
 
         print("\nDependency Analysis Summary:")
         print(f"  Total unique dependencies: {len(self.dependencies)}")

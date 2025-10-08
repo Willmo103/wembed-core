@@ -10,8 +10,6 @@ requires-python = ">=3.13"
 dependencies = [
     "docling>=2.55.1",
     "docling-core>=2.48.4",
-    "llm>=0.27.1",
-    "llm-ollama>=0.14.0",
     "ollama>=0.6.0",
     "pydantic>=2.11.9",
     "sqlalchemy>=2.0.43",
@@ -142,6 +140,7 @@ module = [
     "docling",
     "llm",
     "psycopg2",
+    "typer"
 ]
 ignore_missing_imports = true
 

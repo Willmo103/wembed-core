@@ -3,6 +3,9 @@ import re
 import subprocess
 from datetime import datetime
 from typing import Dict, List, Optional
+
+from typer import echo
+
 from wembed_core.schemas import (
     GitBranchSchema,
     GitCommitSchema,
@@ -67,9 +70,7 @@ class GitMetadataExtractor:
             ["log", "--format=%an", "--", rel_path]
         )
         contributors = (
-            set(contributors_output.split("\n"))
-            if contributors_output
-            else set()
+            set(contributors_output.split("\n")) if contributors_output else set()
         )
 
         # Get file creation date (first commit)
@@ -79,9 +80,7 @@ class GitMetadataExtractor:
         creation_date = last_modified  # fallback
         if creation_info:
             first_date = creation_info.split("\n")[0]
-            creation_date = datetime.fromisoformat(
-                first_date.replace(" ", "T")
-            )
+            creation_date = datetime.fromisoformat(first_date.replace(" ", "T"))
 
         # Get line statistics
         stats = self._run_git_command(
@@ -94,11 +93,7 @@ class GitMetadataExtractor:
         for line in stats.split("\n"):
             if line.strip() and "\t" in line:
                 parts = line.split("\t")
-                if (
-                    len(parts) >= 2
-                    and parts[0].isdigit()
-                    and parts[1].isdigit()
-                ):
+                if len(parts) >= 2 and parts[0].isdigit() and parts[1].isdigit():
                     lines_added_total += int(parts[0])
                     lines_removed_total += int(parts[1])
 
@@ -137,9 +132,7 @@ class GitMetadataExtractor:
             parts = line.split("|", 3)
             if len(parts) >= 4:
                 hash_part, author, date_str, message = parts
-                commit_date = datetime.fromisoformat(
-                    date_str.replace(" ", "T")
-                )
+                commit_date = datetime.fromisoformat(date_str.replace(" ", "T"))
 
                 # Get files changed in this commit
                 files_changed = self._run_git_command(
@@ -213,10 +206,9 @@ class GitMetadataExtractor:
                     is_current = name == current_branch
 
                     try:
-                        commit_date = datetime.fromisoformat(
-                            date_str.replace(" ", "T")
-                        )
-                    except:
+                        commit_date = datetime.fromisoformat(date_str.replace(" ", "T"))
+                    except Exception as e:
+                        echo(f"Error parsing date '{date_str}': {e}", err=True)
                         commit_date = datetime.now()
 
                     branches.append(
@@ -235,40 +227,29 @@ class GitMetadataExtractor:
         total_commits = self._run_git_command(["rev-list", "--count", "HEAD"])
         total_authors = self._run_git_command(["shortlog", "-sn", "--all"])
 
-        author_count = len(
-            [line for line in total_authors.split("\n") if line.strip()]
-        )
+        author_count = len([line for line in total_authors.split("\n") if line.strip()])
 
         # Get repository age
         first_commit = self._run_git_command(
             ["log", "--reverse", "--format=%ad", "--date=iso", "-1"]
         )
-        last_commit = self._run_git_command(
-            ["log", "--format=%ad", "--date=iso", "-1"]
-        )
+        last_commit = self._run_git_command(["log", "--format=%ad", "--date=iso", "-1"])
 
         repo_age_days = 0
         if first_commit and last_commit:
             try:
-                first_date = datetime.fromisoformat(
-                    first_commit.replace(" ", "T")
-                )
-                last_date = datetime.fromisoformat(
-                    last_commit.replace(" ", "T")
-                )
+                first_date = datetime.fromisoformat(first_commit.replace(" ", "T"))
+                last_date = datetime.fromisoformat(last_commit.replace(" ", "T"))
                 repo_age_days = (last_date - first_date).days
-            except:
+            except Exception as e:
+                echo(f"Error parsing dates: {e}", err=True)
                 pass
 
         return {
-            "total_commits": (
-                int(total_commits) if total_commits.isdigit() else 0
-            ),
+            "total_commits": (int(total_commits) if total_commits.isdigit() else 0),
             "total_authors": author_count,
             "repository_age_days": repo_age_days,
-            "current_branch": self._run_git_command(
-                ["branch", "--show-current"]
-            ),
+            "current_branch": self._run_git_command(["branch", "--show-current"]),
             "remote_url": self._run_git_command(
                 ["config", "--get", "remote.origin.url"]
             ),
@@ -277,9 +258,7 @@ class GitMetadataExtractor:
     def get_file_blame(self, file_path: str) -> Dict[int, Dict]:
         """Get blame information for each line in a file"""
         rel_path = os.path.relpath(file_path, self.repo_path)
-        blame_output = self._run_git_command(
-            ["blame", "--line-porcelain", rel_path]
-        )
+        blame_output = self._run_git_command(["blame", "--line-porcelain", rel_path])
 
         blame_data = {}
         current_commit = None

@@ -4,7 +4,7 @@ from typing import List
 from sqlalchemy import JSON, DateTime, ForeignKey, Integer, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
-from ..database import AppBase
+from wembed_core.database import AppBase
 
 
 class DLChunks(AppBase):

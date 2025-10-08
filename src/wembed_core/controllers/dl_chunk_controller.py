@@ -5,7 +5,7 @@ wembed_core/controllers/dl_chunk_controller.py
 from typing import List, Optional
 
 from wembed_core.database import DatabaseService
-from wembed_core.models.dl_chunks import DLChunks
+from wembed_core.models.dl_doc.dl_chunks import DLChunks
 from wembed_core.schemas.dl_schemas import DLChunkSchema
 
 

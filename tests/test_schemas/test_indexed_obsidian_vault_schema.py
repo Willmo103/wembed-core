@@ -19,7 +19,7 @@ class TestIndexedObsidianVaultSchema:
         indexed_at = datetime.now(tz=timezone.utc) - timedelta(days=1)
         valid_data = IndexedObsidianVaultSchema(
             id=1,
-            name="MyVault",
+            vault_name="MyVault",
             host="GitHub",
             root_path="/path/to/vault",
             files=["/path/to/vault/file1.md", "/path/to/vault/file2.md"],
@@ -29,7 +29,7 @@ class TestIndexedObsidianVaultSchema:
 
         schema = IndexedObsidianVaultSchema(**valid_data)
         assert schema.id == 1
-        assert schema.name == "MyVault"
+        assert schema.vault_name == "MyVault"
         assert schema.host == "GitHub"
         assert schema.root_path == "/path/to/vault"
         assert schema.files == ["/path/to/vault/file1.md", "/path/to/vault/file2.md"]
@@ -54,7 +54,7 @@ class TestIndexedObsidianVaultSchema:
         """Test that invalid field types raise ValidationError."""
         invalid_data = {
             "id": "one",  # Should be int
-            "name": "MyVault",
+            "vault_name": "MyVault",
             "host": "GitHub",
             "root_path": "/path/to/vault",
             "files": "not a list",  # Should be List[str]
@@ -69,7 +69,7 @@ class TestIndexedObsidianVaultSchema:
     def test_optional_fields(self):
         """Test that optional fields can be omitted."""
         valid_data = {
-            "name": "MyVault",
+            "vault_name": "MyVault",
             "host": "GitHub",
             "root_path": "/path/to/vault",
         }

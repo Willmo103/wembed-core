@@ -6,7 +6,7 @@ from pydantic import BaseModel
 
 class IndexedRepoSchema(BaseModel):
     id: Optional[int] = None
-    name: str
+    repo_name: str
     host: str
     root_path: str
     files: Optional[List[str]] = None
@@ -17,3 +17,5 @@ class IndexedRepoSchema(BaseModel):
         """Pydantic configuration for ORM compatibility."""
 
         from_attributes = True
+        arbitrary_types_allowed = True
+        json_encoders = {datetime: lambda v: v.isoformat() if v else None}

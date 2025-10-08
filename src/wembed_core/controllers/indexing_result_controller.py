@@ -23,16 +23,17 @@ class IndexingResultsController:
             session.add(db_record)
             session.commit()
             session.refresh(db_record)
-            return db_record
+        return db_record
 
     def get_by_id(self, scan_id: str) -> Optional[FileIndexingResults]:
         """Retrieves a scan result by its ID."""
         with self.db_service.get_db() as session:
-            return (
+            res = (
                 session.query(FileIndexingResults)
                 .filter(FileIndexingResults.id == scan_id)
                 .first()
             )
+        return res
 
     def get_all(self, skip: int = 0, limit: int = 100) -> List[FileIndexingResults]:
         """Retrieves all scan results with pagination."""
@@ -43,8 +44,9 @@ class IndexingResultsController:
         """Deletes a scan result by its ID."""
         with self.db_service.get_db() as session:
             db_record = self.get_by_id(scan_id)
-            if db_record:
+        if db_record:
+            with self.db_service.get_db() as session:
                 session.delete(db_record)
                 session.commit()
                 return True
-            return False
+        return False

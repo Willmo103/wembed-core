@@ -24,30 +24,33 @@ class IndexedVaultController:
             session.add(db_record)
             session.commit()
             session.refresh(db_record)
-            return db_record
+        return db_record
 
     def get_by_id(self, vault_id: int) -> Optional[IndexedObsidianVaults]:
         """Retrieves a vault by its ID."""
         with self.db_service.get_db() as session:
-            return (
+            res = (
                 session.query(IndexedObsidianVaults)
                 .filter(IndexedObsidianVaults.id == vault_id)
                 .first()
             )
+        return res
 
     def get_by_name(self, name: str) -> Optional[IndexedObsidianVaults]:
         """Retrieves a vault by its name."""
         with self.db_service.get_db() as session:
-            return (
+            res = (
                 session.query(IndexedObsidianVaults)
                 .filter(IndexedObsidianVaults.vault_name == name)
                 .first()
             )
+        return res
 
     def get_all(self, skip: int = 0, limit: int = 100) -> List[IndexedObsidianVaults]:
         """Retrieves all vaults with pagination."""
         with self.db_service.get_db() as session:
-            return session.query(IndexedObsidianVaults).offset(skip).limit(limit).all()
+            res = session.query(IndexedObsidianVaults).offset(skip).limit(limit).all()
+        return res
 
     def delete(self, vault_id: int) -> bool:
         """Deletes a vault record by its ID."""

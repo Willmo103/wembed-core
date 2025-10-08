@@ -22,7 +22,7 @@ class DLChunkController:
             session.add(db_record)
             session.commit()
             session.refresh(db_record)
-            return db_record
+        return db_record
 
     def create_batch(self, chunks: List[DLChunkSchema]) -> List[DLChunks]:
         """Creates multiple chunk records in a single batch."""
@@ -32,30 +32,34 @@ class DLChunkController:
             session.commit()
             for record in db_records:
                 session.refresh(record)
-            return db_records
+        return db_records
 
     def get_by_id(self, chunk_id: int) -> Optional[DLChunks]:
         """Retrieves a chunk by its ID."""
         with self.db_service.get_db() as session:
-            return session.query(DLChunks).filter(DLChunks.id == chunk_id).first()
+            res = (
+                session.query(DLChunks).filter(DLChunks.id == chunk_id).first()
+            )
+        return res
 
     def get_by_document_id(self, document_id: int) -> List[DLChunks]:
         """Retrieves all chunks for a given document ID."""
         with self.db_service.get_db() as session:
-            return (
+            res = (
                 session.query(DLChunks)
                 .filter(DLChunks.document_id == document_id)
                 .order_by(DLChunks.chunk_index)
                 .all()
             )
+        return res
 
     def delete_by_document_id(self, document_id: int) -> int:
         """Deletes all chunks associated with a document ID."""
         with self.db_service.get_db() as session:
-            deleted_count = (
-                session.query(DLChunks)
-                .filter(DLChunks.document_id == document_id)
-                .delete()
-            )
-            session.commit()
-            return deleted_count
+            db_record = self.get_by_id(document_id)
+        if db_record:
+            with self.db_service.get_db() as session:
+                session.delete(db_record)
+                session.commit()
+            return True
+        return False

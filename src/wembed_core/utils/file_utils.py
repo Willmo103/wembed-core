@@ -1,6 +1,11 @@
-from pathlib import Path
+import fnmatch
 import subprocess
+from pathlib import Path
 from typing import List, Optional
+
+from typer import Exit, echo
+
+from wembed_core.constants import IGNORE_LIST
 
 
 def process_paths_for_subdir(
@@ -85,9 +90,7 @@ def apply_filters(
     if match_patterns:
         matched_files = set()
         for pattern in match_patterns:
-            pattern_matches = {
-                f for f in file_set if fnmatch.fnmatch(f, pattern)
-            }
+            pattern_matches = {f for f in file_set if fnmatch.fnmatch(f, pattern)}
             matched_files.update(pattern_matches)
         file_set = file_set.intersection(matched_files)
 
@@ -95,9 +98,7 @@ def apply_filters(
     if exclude_patterns:
         excluded_files = set()
         for pattern in exclude_patterns:
-            pattern_matches = {
-                f for f in file_set if fnmatch.fnmatch(f, pattern)
-            }
+            pattern_matches = {f for f in file_set if fnmatch.fnmatch(f, pattern)}
             excluded_files.update(pattern_matches)
         file_set = file_set.difference(excluded_files)
 
@@ -126,16 +127,12 @@ def build_tree_structure(files: List[str]) -> str:
                 current = current[part]
 
     # Convert tree_dict to tree string
-    def render_tree(
-        node: dict, prefix: str = "", is_last: bool = True
-    ) -> List[str]:
+    def render_tree(node: dict, prefix: str = "", is_last: bool = True) -> List[str]:
         lines = []
 
         # Collect directories
         dirs = [
-            (k, v)
-            for k, v in node.items()
-            if k != "__files__" and isinstance(v, dict)
+            (k, v) for k, v in node.items() if k != "__files__" and isinstance(v, dict)
         ]
         dirs.sort(key=lambda x: x[0])
 
@@ -179,25 +176,32 @@ def build_tree_structure(files: List[str]) -> str:
 
     return "\n".join(root_lines)
 
+
 def write_output(
     content: str, file_path: Optional[Path], encoding: str, print_output: bool
 ):
-    """Write content to file and/or stdout based on options."""
+    """Write content to file and/or stdout based on options.
+
+    Args:
+        content: [str] The content to write.
+        file_path: [pathlib.Path] Optional path to write the content to. If None, only prints to stdout.
+        encoding: [str] The encoding to use when writing to file or printing.
+        print_output: [bool] Whether to print the content to stdout.
+    """
+
     if print_output:
         if encoding != "utf8":
             content = content.encode(encoding, errors="ignore").decode(
                 encoding, errors="ignore"
             )
-        typer.echo(content)
+        echo(content)
 
     if file_path:
         try:
             with open(file_path, "w", encoding=encoding) as f:
                 f.write(content)
-            if (
-                not print_output
-            ):  # Only show file message if not printing to stdout
-                typer.echo(f"Output written to: {file_path}")
+            if not print_output:  # Only show file message if not printing to stdout
+                echo(f"Output written to: {file_path}")
         except Exception as e:
-            typer.echo(f"Error writing to file {file_path}: {e}", err=True)
-            raise typer.Exit(1)
+            echo(f"Error writing to file {file_path}: {e}", err=True)
+            raise Exit(1)

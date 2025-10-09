@@ -3,7 +3,7 @@ max-line-length = 135
 exclude = .git,__pycache__,.pytest_cache,.coverage,*.egg-info,build,dist
 
 # Ignore specific rules
-; ignore =
+ignore = E203, F401
     ; E501,  ; Line too long
     ; F401,  ; Module imported but unused
     ; D107,  ; Missing docstring in __init__

@@ -535,6 +535,13 @@
 						<line number="3" hits="1"/>
 					</lines>
 				</class>
+				<class name="indexing_markers.py" filename="src/wembed_core/constants/indexing_markers.py" complexity="0" line-rate="1" branch-rate="0">
+					<methods/>
+					<lines>
+						<line number="1" hits="1"/>
+						<line number="2" hits="1"/>
+					</lines>
+				</class>
 				<class name="md_xref.py" filename="src/wembed_core/constants/md_xref.py" complexity="0" line-rate="1" branch-rate="0">
 					<methods/>
 					<lines>

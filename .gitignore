@@ -21,3 +21,4 @@ htmlcov/
 .dev*
 .mypy_cache/
 .context/
+*coverage*

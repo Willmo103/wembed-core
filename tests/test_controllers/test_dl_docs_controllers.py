@@ -5,7 +5,6 @@ Tests for the Data Loading (DL) controllers, ensuring database
 functionalities and relationships between Inputs, Documents, and Chunks.
 """
 
-from datetime import datetime, timezone
 from unittest.mock import Mock
 
 import pytest

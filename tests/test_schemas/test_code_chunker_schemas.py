@@ -199,7 +199,7 @@ def import_statement_data():
 @pytest.fixture
 def code_chunk_data():
     return {
-        "id": uuid.uuid4(),
+        "chunk_uuid": uuid.uuid4().hex,
         "content": "def hello():\n    print('Hello, World!')",
         "chunk_type": "function",
         "file_path": "src/main.py",
@@ -301,12 +301,12 @@ class TestCodeChunkSchema:
     def test_default_dependencies(self, code_chunk_data):
         code_chunk_data.pop("dependencies", None)
         chunk = CodeChunk(**code_chunk_data)
-        assert chunk.dependencies == set()
+        assert chunk.dependencies == list()
 
     def test_serialization_with_uuid(self, code_chunk_data):
         chunk = CodeChunk(**code_chunk_data)
         chunk_dict = json.loads(chunk.model_dump_json())
-        assert chunk_dict["id"] == str(code_chunk_data["id"])
+        assert chunk_dict["chunk_uuid"] == str(code_chunk_data["chunk_uuid"])
 
 
 class TestUsageNode:

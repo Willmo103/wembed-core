@@ -36,6 +36,11 @@ class ListBuilderModes(str, Enum):
         description="Scan inside of a project folder using git ls-files to find files as the default ignoring configuration.",
         frozen=True,
     )
+    REMOTE: str = Field(
+        default="remote",
+        description="Scan for remote files using a remote file index.",
+        frozen=True,
+    )
 
 
 class ListBuilderOptions(BaseModel):
@@ -75,9 +80,6 @@ class ListBuilderOptions(BaseModel):
     ignored_file_parts: Optional[Set[str]] = Field(
         default=IGNORE_PARTS, description="Set of path segments to exclude."
     )
-    recursive: Optional[bool] = Field(
-        default=True, description="Whether to scan directories recursively."
-    )
     parent_folder_markers: Optional[List[str]] = Field(
         default=None, description="List of parent folder markers to include."
     )
@@ -86,14 +88,47 @@ class ListBuilderOptions(BaseModel):
 class ListBuilder:
     """Builds lists of files to process based on inclusion/exclusion criteria."""
 
-    def __init__(
-        self,
-        root_path: Optional[Path] = Path.cwd(),
-        match_patterns: Optional[list[str]] = None,
-        exclude_ext: Optional[Set[str]] = None,
-        exclude_parts: Optional[Set[str]] = None,
-    ):
-        self.all_files = []
-        self.match_patterns = match_patterns or []
-        self.exclude_ext = exclude_ext or IGNORE_EXTENSIONS
-        self.exclude_parts = exclude_parts or IGNORE_PARTS
+    all_files: List[Path] = []
+    filtered_files: List[Path] = []
+    list_root: Optional[Path] = None
+    options: ListBuilderOptions
+
+    def __init__(self, options: ListBuilderOptions):
+        self.options = options
+        if self.options.mode == ListBuilderModes.FULL:
+            self.list_root = Path.home()
+        self.list_root = options.root_path.resolve() if options.root_path else None
+        # Business logic to populate all_files
+        if self.list_root and self.list_root.exists():
+            if self.options.mode == ListBuilderModes.PROJECT:
+                self.all_files = self.get_git_files()
+            else:
+                self.all_files = list(self.list_root.rglob("*"))
+        else:
+            print(Warning("Invalid or missing root path; no files to scan."))
+            self.all_files = []
+
+    def get_git_files(self) -> List[Path]:
+        """Get list of files tracked by git in the repository."""
+        import subprocess
+
+        if not self.list_root or not (self.list_root / ".git").exists():
+            print(Warning("Not a git repository; cannot get git files."))
+            return []
+
+        try:
+            result = subprocess.run(
+                ["git", "-C", str(self.list_root), "ls-files"],
+                capture_output=True,
+                text=True,
+                check=True,
+            )
+            files = [
+                self.list_root / f.strip()
+                for f in result.stdout.splitlines()
+                if f.strip()
+            ]
+            return files
+        except subprocess.CalledProcessError as e:
+            print(f"Error getting git files: {e}")
+            return []

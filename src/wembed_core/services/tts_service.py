@@ -54,14 +54,14 @@ class TTSService:
     """Core TTS service that manages models, settings, and synthesis."""
 
     def __init__(self, app_config: AppConfig, settings: Optional[TTSSettings] = None):
-        self.app_config = app_config
+        self._app_config = app_config
         self.settings = settings or TTSSettings()
-        self.db_service = DatabaseService(app_config)
-        self.db_service.init_db()
+        self._db_service = DatabaseService(app_config)
+        self._db_service.init_db()
         self.repo_id = self.settings.repo_id
-        self.local_dir = self.app_config.app_data / "tts_models"
-        self.local_dir.mkdir(parents=True, exist_ok=True)
-        self.output_dir = self.app_config.app_data / "tts_output"
+        self._data_dir = self._app_config.app_data / "tts_models"
+        self._data_dir.mkdir(parents=True, exist_ok=True)
+        self.output_dir = self._app_config.app_data / "tts_output"
         self.output_dir.mkdir(parents=True, exist_ok=True)
 
     def download_models(self) -> None:
@@ -72,7 +72,7 @@ class TTSService:
                 f"{self.settings.folder_to_download}/*.onnx",
                 f"{self.settings.folder_to_download}/*.onnx.json",
             ],
-            local_dir=self.local_dir,
+            local_dir=self._data_dir,
             local_dir_use_symlinks=False,
             repo_type="model",
         )
@@ -80,8 +80,8 @@ class TTSService:
     def index_models(self) -> List[Dict[str, Any]]:
         """Scan local_dir for valid model/config pairs and store them in DB."""
         model_entries = []
-        with self.db_service.get_db() as db:
-            for onnx_path in Path(self.local_dir).rglob("*.onnx"):
+        with self._db_service.get_db() as db:
+            for onnx_path in Path(self._data_dir).rglob("*.onnx"):
                 cfg_path = onnx_path.with_suffix(".onnx.json")
                 if not cfg_path.exists():
                     continue
@@ -111,7 +111,7 @@ class TTSService:
 
     def list_models(self, as_json: bool = False) -> str | List[Dict[str, Any]]:
         """Return list of all indexed models."""
-        with self.db_service.get_db() as db:
+        with self._db_service.get_db() as db:
             models = db.query(TTSModel).all()
             model_dicts = [m.as_dict() for m in models]
             return json.dumps(model_dicts, indent=2) if as_json else model_dicts
@@ -126,7 +126,7 @@ class TTSService:
         if not text.strip():
             raise ValueError("No text provided.")
 
-        with self.db_service.get_db() as db:
+        with self._db_service.get_db() as db:
             model = (
                 db.query(TTSModel)
                 .filter_by(name=model_name or self.settings.default_voice)

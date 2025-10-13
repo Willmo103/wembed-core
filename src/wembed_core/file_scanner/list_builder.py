@@ -1,17 +1,19 @@
-from enum import Enum
 import fnmatch
+from enum import Enum
 from pathlib import Path
 from sys import prefix
 from typing import List, Optional, Set
 
 from pydantic import BaseModel, Field, computed_field
-from .dot_scanignore import DotScanIgnoreFile
+
 from wembed_core.constants import (
     IGNORE_EXTENSIONS,
     IGNORE_PARTS,
     OBSIDIAN_MARKER,
     REPO_MARKER,
 )
+
+from .dot_scanignore import DotScanIgnoreFile
 
 
 class ListBuilderModes(str, Enum):
@@ -90,46 +92,53 @@ class ListBuilderOptions(BaseModel):
 class ListBuilder:
     """Builds lists of files to process based on inclusion/exclusion criteria."""
 
-    all_files: Optional[List[Path]] = Field(default=None, description="All possible files found depending on mode.")
-    filtered_files: Optional[List[Path]] = Field(default=None, description="Files filtered by inclusion/exclusion criteria.")
-    mode: Optional[ListBuilderModes] = Field(default=None, description="Mode of operation.")
-    root: Optional[Path] = Field(default=None, description="Root directory for scanning.")
-    base_directory: Optional[Path] = None
+    all_files: Optional[List[Path]] = Field(
+        default=None, description="All possible files found depending on mode."
+    )
+    filtered_files: Optional[List[Path]] = Field(
+        default=None, description="Files filtered by inclusion/exclusion criteria."
+    )
+    mode: Optional[ListBuilderModes] = Field(
+        default=None, description="Mode of operation."
+    )
+    root: Optional[Path] = Field(
+        default=None, description="Root directory for scanning."
+    )
     options: ListBuilderOptions
     marked_dirs: Optional[Set[Path]] = None
 
     def __init__(self, options: ListBuilderOptions):
 
         self.options = options
-        if self.options.mode == ListBuilderModes.FULL:
-            self.base_directory = Path.home()
-        self.base_directory = options.root_path.resolve() if options.root_path else None
+        self.mode = ListBuilderModes(options.mode) if options.mode else None
+        self.root = options.root_path.resolve() if options.root_path else None
+        if self.mode == ListBuilderModes.FULL:
+            self.root = Path.home()
+        elif self.mode == ListBuilderModes.PROJECT:
+            self.root = options.root_path.resolve() if options.root_path else None
+            self.all_files = self.get_git_files()
+        self.root = options.root_path.resolve() if options.root_path else None
         # Business logic to populate all_files
-        if not (self.base_directory and self.base_directory.exists()):
+        if not (self.root and self.root.exists()):
             raise ValueError("Invalid or missing root path; cannot scan files.")
-        elif
-            print(Warning("Invalid or missing root path; no files to scan."))
-            self.all_files = []
 
     def get_git_files(self) -> Optional[List[Path]]:
         """Get list of files tracked by git in the repository."""
         import subprocess
 
-        if not self.base_directory or not (self.base_directory / ".git").exists():
+        if not self.root or not (self.root / ".git").exists():
             print(Warning("Not a git repository; cannot get git files."))
             return []
 
         try:
             result = subprocess.run(
-                ["git", "-C", str(self.base_directory), "ls-files"],
+                ["git", "-C", str(self.root), "ls-files"],
                 capture_output=True,
                 text=True,
                 check=True,
             )
             files = [
-                self.base_directory / f.strip()
-                for f in result.stdout.splitlines()
-                if f.strip()
+                self.root / f.strip() for f in result.stdout.splitlines() if f.strip()
             ]
             return files
         except subprocess.CalledProcessError as e:
@@ -273,7 +282,9 @@ class ListBuilder:
                 marked_dirs.add(file.resolve())
         return marked_dirs if marked_dirs else None
 
-    def try_locate_obsidian_vaults(self, target_directory: Optional[Path]) -> Optional[Set[Path]]:
+    def try_locate_obsidian_vaults(
+        self, target_directory: Optional[Path]
+    ) -> Optional[Set[Path]]:
         """Returns a set of the root folders containing a `.obsidian` folder."""
         if not target_directory:
             return None
@@ -281,11 +292,13 @@ class ListBuilder:
             self.all_files = target_directory.rglob("*")
         vault_dirs = set()
         for file in self.all_files:
-            if file.is_dir() and file.name == ".obsidian":
+            if file.is_dir() and file.name == OBSIDIAN_MARKER:
                 vault_dirs.add(file.parent.resolve())
         return vault_dirs if vault_dirs else None
 
-    def try_locate_repositories(self, target_directory: Optional[Path]) -> Optional[Set[Path]]:
+    def try_locate_repositories(
+        self, target_directory: Optional[Path]
+    ) -> Optional[Set[Path]]:
         """Returns a set of the root folders containing a `.git` folder."""
         if not target_directory:
             return None
@@ -293,22 +306,38 @@ class ListBuilder:
             self.all_files = target_directory.rglob("*")
         repo_dirs = set()
         for file in self.all_files:
-            if file.is_dir() and file.name == ".git":
+            if file.is_dir() and file.name == REPO_MARKER:
                 repo_dirs.add(file.parent.resolve())
         return repo_dirs if repo_dirs else None
 
-    def try_locate_images(self, target_directory: Optional[Path]) -> Optional[Set[Path]]:
-        """Returns a set of the root folders containing image files."""
+    def try_locate_images(
+        self, target_directory: Optional[Path]
+    ) -> Optional[Set[Path]]:
+        """Returns a set of image file paths."""
         if not target_directory:
             return None
         if not self.all_files:
             self.all_files = target_directory.rglob("*")
-        image_dirs = set()
-        image_extensions = {".png", ".jpg", ".jpeg", ".gif", ".bmp", ".tiff", ".svg", ".webp", ".nef", ".cr2", ".arw", ".orf", ".rw2"}
+        image_files = set()
+        image_extensions = {
+            ".png",
+            ".jpg",
+            ".jpeg",
+            ".gif",
+            ".bmp",
+            ".tiff",
+            ".svg",
+            ".webp",
+            ".nef",
+            ".cr2",
+            ".arw",
+            ".orf",
+            ".rw2",
+        }
         for file in self.all_files:
             if file.is_file() and file.suffix.lower() in image_extensions:
-                image_dirs.add(file.parent.resolve())
-        return image_dirs if image_dirs else None
+                image_files.add(file.resolve())
+        return image_files if image_files else None
 
     def try_locate_dL_ingestiable_files(
         self, target_directory: Optional[Path]
@@ -319,7 +348,24 @@ class ListBuilder:
         if not self.all_files:
             self.all_files = target_directory.rglob("*")
         dl_input_dirs = set()
-        dl_input_extensions = {".pdf", ".docx", ".pptx", ".xlsx", ".html", ".xhtml", ".wav", ".mp3", ".vtt", ".csv", ".png", ".tiff", ".jpeg", ".webp", ".bmp", ".jpeg"}
+        dl_input_extensions = {
+            ".pdf",
+            ".docx",
+            ".pptx",
+            ".xlsx",
+            ".html",
+            ".xhtml",
+            ".wav",
+            ".mp3",
+            ".vtt",
+            ".csv",
+            ".png",
+            ".tiff",
+            ".jpeg",
+            ".webp",
+            ".bmp",
+            ".jpeg",
+        }
         for file in self.all_files:
             if file.is_file() and file.suffix.lower() in dl_input_extensions:
                 dl_input_dirs.add(file.parent.resolve())

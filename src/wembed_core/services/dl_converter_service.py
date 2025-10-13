@@ -64,17 +64,21 @@ class DLConverterService:
     ) -> Optional[ConversionRetult]:
         """Converts a document from a source URL/path to DLDocument and stores it in the DB."""
         headers = headers or HEADERS
-        if "://" not in source:
-            doc = self._document_converter.convert(source=source).document
-            if not source_type:
-                source_type = "file"
-        else:
-            doc = self._document_converter.convert(
-                source=source, headers=headers
-            ).document
-            if not source_type:
-                source_type = "url"
-
+        doc: DoclingDocument
+        try:
+            if "://" not in source:
+                doc = self._document_converter.convert(source=source).document
+                if not source_type:
+                    source_type = "file"
+            else:
+                doc = self._document_converter.convert(
+                    source=source, headers=headers
+                ).document
+                if not source_type:
+                    source_type = "url"
+        except Exception as e:
+            print(f"Error converting document from {source}: {e}")
+            return None
         doc_schema = DLDocumentSchema(
             source=source,
             source_type=source_type,
@@ -160,3 +164,7 @@ class DLConverterService:
             error_msg = f"Error during chunking: {str(e)}"
             errors.append(error_msg)
             print(f"Chunking failed: {e}")
+            return None
+        return ConversionRetult(
+            document=doc, doc_record=doc_record, chunk_records=chunk_records
+        )

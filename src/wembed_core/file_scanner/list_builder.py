@@ -1,10 +1,11 @@
 from enum import Enum
+import fnmatch
 from pathlib import Path
 from sys import prefix
 from typing import List, Optional, Set
 
 from pydantic import BaseModel, Field, computed_field
-
+from .dot_scanignore import DotScanIgnoreFile
 from wembed_core.constants import (
     IGNORE_EXTENSIONS,
     IGNORE_PARTS,
@@ -89,28 +90,28 @@ class ListBuilderOptions(BaseModel):
 class ListBuilder:
     """Builds lists of files to process based on inclusion/exclusion criteria."""
 
-    all_files: List[Path] = []
-    filtered_files: List[Path] = []
+    all_files: Optional[List[Path]] = Field(default=None, description="All possible files found depending on mode.")
+    filtered_files: Optional[List[Path]] = Field(default=None, description="Files filtered by inclusion/exclusion criteria.")
+    mode: Optional[ListBuilderModes] = Field(default=None, description="Mode of operation.")
+    root: Optional[Path] = Field(default=None, description="Root directory for scanning.")
     base_directory: Optional[Path] = None
     options: ListBuilderOptions
     marked_dirs: Optional[Set[Path]] = None
 
     def __init__(self, options: ListBuilderOptions):
+
         self.options = options
         if self.options.mode == ListBuilderModes.FULL:
             self.base_directory = Path.home()
         self.base_directory = options.root_path.resolve() if options.root_path else None
         # Business logic to populate all_files
-        if self.base_directory and self.base_directory.exists():
-            if self.options.mode == ListBuilderModes.PROJECT:
-                self.all_files = self.get_git_files()
-            else:
-                self.all_files = list(self.base_directory.rglob("*"))
-        else:
+        if not (self.base_directory and self.base_directory.exists()):
+            raise ValueError("Invalid or missing root path; cannot scan files.")
+        elif
             print(Warning("Invalid or missing root path; no files to scan."))
             self.all_files = []
 
-    def get_git_files(self) -> List[Path]:
+    def get_git_files(self) -> Optional[List[Path]]:
         """Get list of files tracked by git in the repository."""
         import subprocess
 
@@ -148,15 +149,15 @@ class ListBuilder:
             - original_paths: Filtered list of original paths (e.g., ['src/app/main.py']).
             - adjusted_paths: Paths adjusted to be relative to the sub_dir (e.g., ['main.py']).
         """
-        if not self.sub_dir:
-            return self.files, self.files
+        if not self.options.subdirs:
+            return self.filtered_files, self.filtered_files
 
         # Normalize the path to use forward slashes and remove any leading/trailing ones.
         normalized_dirs = [
-            sub_dir.strip("/\\").replace("\\", "/") for sub_dir in self.subdirs
+            sub_dir.strip("/\\").replace("\\", "/") for sub_dir in self.options.subdirs
         ]
         if not any(normalized_dirs):
-            return self.files, self.files
+            return self.filtered_files, self.filtered_files
 
         prefixes = [nd + "/" for nd in normalized_dirs]
 
@@ -169,3 +170,157 @@ class ListBuilder:
         adjusted_paths = [f.removeprefix(prefix) for f in original_paths]
 
         return original_paths, adjusted_paths
+
+    def path_has_ignored_part(self, item: Path) -> bool:
+        """
+        Checks each pathlib.Path().part of `item` against each str in `parts`
+        and returns True if any match. The default for 'parts' comes from
+        [src/wembed/config/ignore_parts.py] if the
+        IGNORE_PARTS environment variable is not set.
+
+        Args:
+            item (pathlib.Path): The file or directory path to check.
+            parts (Set[str]): A set of path segments to ignore.
+
+        Returns:
+            bool: True if any part of the path matches an ignored segment, False otherwise.
+        """
+        if DotScanIgnoreFile.is_present(item.parent):
+            scanignore = self.try_load_scanignore(item.parent)
+            if scanignore:
+                if scanignore.apply_exclude_patterns([item]):
+                    return True
+        return any(seg in self.options.ignored_file_parts for seg in item.parts)
+
+    def path_has_ignored_extension(self, item: Path) -> bool:
+        """
+        Checks the suffix of `item` against each str in `extensions`
+        and returns True if any match. The default for 'extensions' comes from
+        [src/wembed/config/ignore_extensions.py] if the
+        IGNORE_EXTENSIONS environment variable is not set.
+
+        Args:
+            item (pathlib.Path): The file or directory path to check.
+            extensions (Set[str]): A set of file extensions to ignore.
+        Returns:
+            bool: True if the file's extension matches an ignored extension, False otherwise.
+        """
+        if DotScanIgnoreFile.is_present(item.parent):
+            scanignore = self.try_load_scanignore(item.parent)
+            if scanignore:
+                if scanignore.apply_exclude_patterns([item]):
+                    return True
+        return item.suffix in self.options.ignored_extensions
+
+    def try_load_scanignore(
+        self, target_directory: Optional[Path]
+    ) -> Optional[DotScanIgnoreFile]:
+        """Attempts to load a .scanignore file from the base directory."""
+        if not target_directory:
+            return None
+
+        scanignore_path = target_directory / ".scanignore"
+        if scanignore_path.exists():
+            try:
+                return DotScanIgnoreFile.load(scanignore_path)
+            except Exception as e:
+                print(f"Error loading .scanignore: {e}")
+                return None
+        return None
+
+    def try_load_docs_folder_and_readmes_only(
+        self, target_directory: Optional[Path]
+    ) -> Optional[Set[Path]]:
+        """ """
+        targets = set(
+            "docs",
+            "examples",
+            "*README*",
+            "*readme*",
+            "*.md",
+            "*MD",
+            "*.txt",
+            "*.rst",
+            "*.RST",
+            "*.adoc",
+            "*.ADOC",
+            "*.asciidoc",
+            "*.ASCIIDOC",
+            "*.org",
+            "*.ORG",
+            "*.wiki",
+            "*.WIKI",
+            "*.markdown",
+            "*.MARKDOWN",
+            "*.mdown",
+            "*.MDOWN",
+            "*.mkd",
+            "*.MKD",
+            "*.mkdn",
+            "*.MKDN",
+            "*.mdx",
+            "*.MDX",
+            "*.METADATA",
+            "*.metadata",
+        )
+        if not self.all_files:
+            self.all_files = target_directory.rglob("*")
+        marked_dirs = set()
+        for file in self.all_files:
+            if file.is_dir() and any(
+                fnmatch(file.name, pattern) for pattern in targets
+            ):
+                marked_dirs.add(file.resolve())
+        return marked_dirs if marked_dirs else None
+
+    def try_locate_obsidian_vaults(self, target_directory: Optional[Path]) -> Optional[Set[Path]]:
+        """Returns a set of the root folders containing a `.obsidian` folder."""
+        if not target_directory:
+            return None
+        if not self.all_files:
+            self.all_files = target_directory.rglob("*")
+        vault_dirs = set()
+        for file in self.all_files:
+            if file.is_dir() and file.name == ".obsidian":
+                vault_dirs.add(file.parent.resolve())
+        return vault_dirs if vault_dirs else None
+
+    def try_locate_repositories(self, target_directory: Optional[Path]) -> Optional[Set[Path]]:
+        """Returns a set of the root folders containing a `.git` folder."""
+        if not target_directory:
+            return None
+        if not self.all_files:
+            self.all_files = target_directory.rglob("*")
+        repo_dirs = set()
+        for file in self.all_files:
+            if file.is_dir() and file.name == ".git":
+                repo_dirs.add(file.parent.resolve())
+        return repo_dirs if repo_dirs else None
+
+    def try_locate_images(self, target_directory: Optional[Path]) -> Optional[Set[Path]]:
+        """Returns a set of the root folders containing image files."""
+        if not target_directory:
+            return None
+        if not self.all_files:
+            self.all_files = target_directory.rglob("*")
+        image_dirs = set()
+        image_extensions = {".png", ".jpg", ".jpeg", ".gif", ".bmp", ".tiff", ".svg", ".webp", ".nef", ".cr2", ".arw", ".orf", ".rw2"}
+        for file in self.all_files:
+            if file.is_file() and file.suffix.lower() in image_extensions:
+                image_dirs.add(file.parent.resolve())
+        return image_dirs if image_dirs else None
+
+    def try_locate_dL_ingestiable_files(
+        self, target_directory: Optional[Path]
+    ) -> Optional[Set[Path]]:
+        """Returns a set of the root folders containing dL ingestiable files."""
+        if not target_directory:
+            return None
+        if not self.all_files:
+            self.all_files = target_directory.rglob("*")
+        dl_input_dirs = set()
+        dl_input_extensions = {".pdf", ".docx", ".pptx", ".xlsx", ".html", ".xhtml", ".wav", ".mp3", ".vtt", ".csv", ".png", ".tiff", ".jpeg", ".webp", ".bmp", ".jpeg"}
+        for file in self.all_files:
+            if file.is_file() and file.suffix.lower() in dl_input_extensions:
+                dl_input_dirs.add(file.parent.resolve())
+        return dl_input_dirs if dl_input_dirs else None

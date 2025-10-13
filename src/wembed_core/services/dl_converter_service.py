@@ -4,6 +4,7 @@ wembed_core/services/dl_converter_service.py
 Orchestrates the conversion of documents into deep learning-friendly formats and stores them in the database.
 """
 
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Optional
 
@@ -11,7 +12,7 @@ from docling.document_converter import DocumentConverter
 from docling_core.transforms.chunker.hybrid_chunker import HybridChunker
 from docling_core.transforms.chunker.tokenizer.huggingface import HuggingFaceTokenizer
 from docling_core.types.doc.document import DoclingDocument
-from pydantic import BaseModel
+from pydantic import BaseModel, Json
 
 from wembed_core.config import AppConfig
 from wembed_core.constants import HEADERS
@@ -27,13 +28,27 @@ from wembed_core.ollama_client import OllamaClient
 from wembed_core.schemas import DLChunkSchema, DLDocumentSchema
 
 
-class ConversionRetult(BaseModel):
+@dataclass
+class ConversionResult:
+    """
+    Result of a document conversion process.
+    Attributes:
+        document (DoclingDocument): The converted document object.
+        doc_record (DLDocuments): The database record for the document.
+        chunk_records (list[DLChunks]): List of database records for the document's chunks.
+    """
+
     document: DoclingDocument
     doc_record: DLDocuments
     chunk_records: list[DLChunks]
 
 
 class DLConverterService:
+    """
+    Service to convert documents into deep learning-friendly formats and store them in the database.
+    This service handles document conversion, chunking, embedding generation, and database storage.
+    """
+
     def __init__(
         self,
         app_config: AppConfig,
@@ -67,7 +82,7 @@ class DLConverterService:
         headers: Optional[dict[str, str]] = None,
         source_type: Optional[str] = None,
         source_ref: Optional[str] = None,
-    ) -> Optional[ConversionRetult]:
+    ) -> Optional[ConversionResult]:
         """Converts a document from a source URL/path to DLDocument and stores it in the DB."""
         headers = headers or HEADERS
         doc: DoclingDocument
@@ -171,6 +186,6 @@ class DLConverterService:
             errors.append(error_msg)
             print(f"Chunking failed: {e}")
             return None
-        return ConversionRetult(
+        return ConversionResult(
             document=doc, doc_record=doc_record, chunk_records=chunk_records
         )

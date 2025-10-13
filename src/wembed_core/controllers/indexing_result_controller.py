@@ -1,5 +1,7 @@
 """
 wembed_core/controllers/scan_result_controller.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Controller for CRUD operations on FileIndexingResults.
 """
 
 from typing import List, Optional

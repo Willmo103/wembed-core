@@ -1,5 +1,7 @@
 """
 wembed_core/controllers/code_chunker_git_commit_controller.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Controller for CRUD operations on CodeChunkerGitCommits.
 """
 
 from typing import List, Optional

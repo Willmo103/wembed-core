@@ -1,3 +1,9 @@
+"""
+ wembed_core/file_scanner/utils.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Utility functions for file scanning and indexing.
+"""
+
 import hashlib
 import mimetypes
 import os

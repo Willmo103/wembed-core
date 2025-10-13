@@ -1,3 +1,9 @@
+"""
+wembed_core/schemas/indexing_schemas.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Schemas for indexing results, repositories, Obsidian vaults, files, and file lines.
+"""
+
 from datetime import datetime, timezone
 from typing import Generator, List, Optional
 

@@ -1,5 +1,10 @@
 """
 wembed_core/chunker/ast_chunker.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Chunks Python code using AST parsing to identify classes and functions.
+This module provides the ASTChunker class which reads a Python file,
+parses its AST, and generates code chunks for classes and functions/methods.
+It returns a list of CodeChunk schemas representing the identified code segments.
 """
 
 import ast

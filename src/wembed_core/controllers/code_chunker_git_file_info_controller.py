@@ -1,5 +1,7 @@
 """
 wembed_core/controllers/code_chunker_git_file_info_controller.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Controller for CRUD operations on CodeChunkerGitFileInfo.
 """
 
 from typing import Optional

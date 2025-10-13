@@ -1,5 +1,7 @@
 """
 wembed_core/controllers/code_chunker_usage_node_controller.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Controller for CRUD operations on CodeChunkerUsageNodes.
 """
 
 from typing import List

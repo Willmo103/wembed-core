@@ -1,3 +1,9 @@
+"""
+wembed_core/models/dl_doc/dl_inputs.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+SQLAlchemy model for input records.
+"""
+
 from datetime import datetime, timezone
 from typing import List, Optional
 

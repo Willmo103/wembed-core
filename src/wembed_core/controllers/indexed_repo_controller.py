@@ -1,5 +1,7 @@
 """
 wembed_core/controllers/indexed_repo_controller.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Controller for CRUD operations on IndexedRepos.
 """
 
 from typing import List, Optional

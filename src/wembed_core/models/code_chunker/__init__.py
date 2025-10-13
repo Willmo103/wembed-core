@@ -1,3 +1,9 @@
+"""
+ wembed_core/models/code_chunker/__init__.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Initializes the code_chunker models package.
+"""
+
 from .code_chunker_code_chunk import CodeChunkerCodeChunks
 from .code_chunker_dependency_node import (
     CodeChunkerDependencyNodes,

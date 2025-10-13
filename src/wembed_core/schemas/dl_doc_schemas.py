@@ -1,5 +1,7 @@
 """
 Pydantic schemas for Document and Chunk models.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+These schemas define the structure and validation for deep learning documents and their associated chunks.
 """
 
 from datetime import datetime, timezone

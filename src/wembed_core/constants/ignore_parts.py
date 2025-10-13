@@ -1,3 +1,9 @@
+"""
+wembed_core/constants/ignore_parts.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Directories and file parts to ignore during file processing.
+"""
+
 from typing import Set
 
 IGNORE_PARTS: Set[str] = {

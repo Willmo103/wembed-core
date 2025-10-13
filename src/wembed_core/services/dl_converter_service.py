@@ -1,3 +1,9 @@
+"""
+wembed_core/services/dl_converter_service.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Orchestrates the conversion of documents into deep learning-friendly formats and stores them in the database.
+"""
+
 from datetime import datetime, timezone
 from typing import Optional
 

@@ -1,3 +1,9 @@
+"""
+wembed_core/embedding.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Embedding service using Ollama for generating text embeddings.
+"""
+
 # import llm_ollama  # noqa: F401 # Ensure the Ollama integration is loaded for llm
 from pydantic import BaseModel, Field
 

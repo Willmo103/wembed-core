@@ -1,4 +1,6 @@
 """
+wembed_core/models/indexing/indexed_file_lines.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 SQLAlchemy model for indexed file lines with embeddings.
 """
 

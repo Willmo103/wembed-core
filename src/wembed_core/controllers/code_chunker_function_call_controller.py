@@ -1,5 +1,7 @@
 """
 wembed_core/controllers/code_chunker_function_call_controller.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Controller for CRUD operations on CodeChunkerFunctionCalls.
 """
 
 from typing import List

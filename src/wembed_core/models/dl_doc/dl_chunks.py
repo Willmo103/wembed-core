@@ -1,3 +1,9 @@
+"""
+ wembed_core/models/dl_doc/dl_chunks.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ SQLAlchemy model for document chunks.
+"""
+
 from datetime import datetime, timezone
 from typing import List
 

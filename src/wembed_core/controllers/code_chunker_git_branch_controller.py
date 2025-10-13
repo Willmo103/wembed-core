@@ -1,5 +1,7 @@
 """
 wembed_core/controllers/code_chunker_git_branch_controller.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Controller for CRUD operations on CodeChunkerGitBranches.
 """
 
 from typing import List

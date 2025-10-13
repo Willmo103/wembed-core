@@ -1,3 +1,9 @@
+"""
+wembed_core/constants/stdlib_modules.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Standard library modules in Python.
+"""
+
 STD_LIB_MODULES: set[str] = {
     "os",
     "sys",

@@ -1,5 +1,7 @@
 """
 wembed_core/controllers/dl_document_controller.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Controller for CRUD operations on DLDocuments.
 """
 
 from datetime import datetime, timezone

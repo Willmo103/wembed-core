@@ -1,3 +1,8 @@
+"""
+ wembed_core/models/tts.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ SQLAlchemy models for Text-to-Speech (TTS) functionality."""
+
 from typing import Any, Dict
 
 from sqlalchemy import ForeignKey, Integer, String

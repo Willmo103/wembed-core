@@ -1,3 +1,9 @@
+"""
+wembed_core/file_scanner/dot_scanignore.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Handles .scanignore files for excluding files during scanning.
+"""
+
 from fnmatch import fnmatch
 from pathlib import Path
 

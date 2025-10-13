@@ -1,4 +1,6 @@
 """
+wembed_core/database.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 SQLAlchemy setup and database service for the application.
 """
 

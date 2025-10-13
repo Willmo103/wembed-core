@@ -1,3 +1,9 @@
+"""
+wembed_core/file_scanner/list_builder.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Builds lists of files to process based on various criteria.
+"""
+
 import fnmatch
 from enum import Enum
 from pathlib import Path

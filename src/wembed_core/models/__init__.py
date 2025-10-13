@@ -7,6 +7,6 @@ It also provides controller/repository classes for interacting with the database
 """
 
 from .code_chunker import *  # noqa: F401, F403
-from .indexing import *  # noqa: F401, F403
 from .dl_doc import *  # noqa: F401, F403
+from .indexing import *  # noqa: F401, F403
 from .tts import *  # noqa: F401, F403

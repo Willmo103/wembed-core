@@ -1,3 +1,8 @@
+"""
+ wembed_core/models/indexing/indexed_repos.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ SQLAlchemy model for code repositories."""
+
 from datetime import datetime
 from typing import List, Optional
 

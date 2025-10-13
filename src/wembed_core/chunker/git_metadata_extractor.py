@@ -1,3 +1,11 @@
+"""
+wembed_core/chunker/git_metadata_extractor.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Extracts Git metadata for files and repositories.
+This module provides the GitMetadataExtractor class which interfaces with the Git command line
+to retrieve information such as commit history, authorship, branches, and file-specific metadata.
+"""
+
 import os
 import re
 import subprocess

@@ -1,5 +1,7 @@
 """
 wembed_core/controllers/dl_chunk_controller.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Controller for CRUD operations on DLChunks.
 """
 
 from typing import List, Optional

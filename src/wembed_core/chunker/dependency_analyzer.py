@@ -1,3 +1,13 @@
+"""
+wembed_core/chunker/dependency_analyzer.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Analyzes Python project dependencies and builds a usage graph.
+This module provides the DependencyAnalyzer class which scans Python files
+for import statements, determines the source of each dependency (standard library,
+third-party packages, or local modules), and builds a graph of dependencies
+between modules.
+"""
+
 import ast
 import importlib
 import json

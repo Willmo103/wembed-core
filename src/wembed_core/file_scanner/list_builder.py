@@ -1,5 +1,6 @@
 from enum import Enum
 from pathlib import Path
+from sys import prefix
 from typing import List, Optional, Set
 
 from pydantic import BaseModel, Field, computed_field
@@ -90,20 +91,21 @@ class ListBuilder:
 
     all_files: List[Path] = []
     filtered_files: List[Path] = []
-    list_root: Optional[Path] = None
+    base_directory: Optional[Path] = None
     options: ListBuilderOptions
+    marked_dirs: Optional[Set[Path]] = None
 
     def __init__(self, options: ListBuilderOptions):
         self.options = options
         if self.options.mode == ListBuilderModes.FULL:
-            self.list_root = Path.home()
-        self.list_root = options.root_path.resolve() if options.root_path else None
+            self.base_directory = Path.home()
+        self.base_directory = options.root_path.resolve() if options.root_path else None
         # Business logic to populate all_files
-        if self.list_root and self.list_root.exists():
+        if self.base_directory and self.base_directory.exists():
             if self.options.mode == ListBuilderModes.PROJECT:
                 self.all_files = self.get_git_files()
             else:
-                self.all_files = list(self.list_root.rglob("*"))
+                self.all_files = list(self.base_directory.rglob("*"))
         else:
             print(Warning("Invalid or missing root path; no files to scan."))
             self.all_files = []
@@ -112,19 +114,19 @@ class ListBuilder:
         """Get list of files tracked by git in the repository."""
         import subprocess
 
-        if not self.list_root or not (self.list_root / ".git").exists():
+        if not self.base_directory or not (self.base_directory / ".git").exists():
             print(Warning("Not a git repository; cannot get git files."))
             return []
 
         try:
             result = subprocess.run(
-                ["git", "-C", str(self.list_root), "ls-files"],
+                ["git", "-C", str(self.base_directory), "ls-files"],
                 capture_output=True,
                 text=True,
                 check=True,
             )
             files = [
-                self.list_root / f.strip()
+                self.base_directory / f.strip()
                 for f in result.stdout.splitlines()
                 if f.strip()
             ]
@@ -132,3 +134,38 @@ class ListBuilder:
         except subprocess.CalledProcessError as e:
             print(f"Error getting git files: {e}")
             return []
+
+    def process_paths_for_subdirs(
+        self,
+    ) -> tuple[List[str], List[str]]:
+        """Process the list of files to filter and adjust paths based on specified subdirectories.
+        If subdirs are specified, this method filters the files to include only those
+        that reside within the given subdirectories. It then adjusts the paths to be
+        relative to the subdirectory.
+
+        Returns:
+            A tuple containing:
+            - original_paths: Filtered list of original paths (e.g., ['src/app/main.py']).
+            - adjusted_paths: Paths adjusted to be relative to the sub_dir (e.g., ['main.py']).
+        """
+        if not self.sub_dir:
+            return self.files, self.files
+
+        # Normalize the path to use forward slashes and remove any leading/trailing ones.
+        normalized_dirs = [
+            sub_dir.strip("/\\").replace("\\", "/") for sub_dir in self.subdirs
+        ]
+        if not any(normalized_dirs):
+            return self.files, self.files
+
+        prefixes = [nd + "/" for nd in normalized_dirs]
+
+        # Find all files that start with the subdirectory path.
+        original_paths = [
+            f for f in self.files if any(f.startswith(prefix) for prefix in prefixes)
+        ]
+
+        # Create new paths with the subdirectory prefix removed.
+        adjusted_paths = [f.removeprefix(prefix) for f in original_paths]
+
+        return original_paths, adjusted_paths

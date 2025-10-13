@@ -16,7 +16,6 @@ from huggingface_hub import snapshot_download
 from piper.voice import PiperVoice
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from sqlalchemy.orm import Session
 
 from wembed_core.config import (
     AppConfig,

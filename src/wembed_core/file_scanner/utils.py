@@ -119,7 +119,7 @@ def get_filelines_list_from_file_record(
     return filelines
 
 
-def generate_markdown_content(file_record: IndexedFileSchema) -> str:
+def format_file_record_markdown(file_record: IndexedFileSchema) -> str:
     """Generate markdown content for a file record."""
     return f"""---
 id: {file_record.id}

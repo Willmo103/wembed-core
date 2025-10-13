@@ -8,46 +8,6 @@ from typer import Exit, echo
 from wembed_core.constants import IGNORE_LIST
 
 
-def process_paths_for_subdir(
-    files: List[str], sub_dir: Optional[str]
-) -> tuple[List[str], List[str]]:
-    """
-    Filters files by a subdirectory and returns both original and adjusted paths.
-
-    This function is key to making the --sub-dir feature work. It takes all the
-    files from git, finds the ones inside the target sub-directory, and then
-    creates a "virtual" view of them by stripping the sub-directory prefix.
-    We need both the original paths (for reading files) and the adjusted paths
-    (for display in the tree or list).
-
-    Args:
-        files: List of file paths relative to the repo root.
-        sub_dir: The subdirectory to filter by, e.g., "src/app".
-
-    Returns:
-        A tuple containing:
-        - original_paths: Filtered list of original paths (e.g., ['src/app/main.py']).
-        - adjusted_paths: Paths adjusted to be relative to the sub_dir (e.g., ['main.py']).
-    """
-    if not sub_dir:
-        return files, files
-
-    # Normalize the path to use forward slashes and remove any leading/trailing ones.
-    normalized_dir = sub_dir.strip("/\\").replace("\\", "/")
-    if not normalized_dir:
-        return files, files
-
-    prefix = normalized_dir + "/"
-
-    # Find all files that start with the subdirectory path.
-    original_paths = [f for f in files if f.startswith(prefix)]
-
-    # Create new paths with the subdirectory prefix removed.
-    adjusted_paths = [f.removeprefix(prefix) for f in original_paths]
-
-    return original_paths, adjusted_paths
-
-
 def get_git_files(repo_path: Path, include_empty: bool = False) -> List[str]:
     """Get list of files tracked by git in the repository, optionally filtering empty files."""
     try:
@@ -105,10 +65,13 @@ def apply_filters(
     return sorted(list(file_set))
 
 
-def build_tree_structure(files: List[str]) -> str:
+def build_tree_structure(files: List[str] | List[Path]) -> str:
     """Build a tree structure string from a list of file paths."""
     if not files:
         return ""
+
+    if isinstance(files[0], Path):
+        files = [str(f.as_posix()) for f in files]
 
     # Build directory structure
     tree_dict = {}

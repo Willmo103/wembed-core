@@ -42,3 +42,6 @@ class TTSUserSettings(AppBase):
     )
 
     model: Mapped[Optional[TTSModel]] = relationship("TTSModel")
+
+
+__all__ = ["TTSModel", "TTSUserSettings"]

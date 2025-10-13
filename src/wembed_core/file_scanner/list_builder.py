@@ -45,6 +45,11 @@ class ListBuilderModes(str, Enum):
         description="Scan for remote files using a remote file index.",
         frozen=True,
     )
+    DOCLING: str = Field(
+        default="docling",
+        description="Scan for Docling files.",
+        frozen=True,
+    )
 
 
 class ListBuilderOptions(BaseModel):

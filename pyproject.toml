@@ -1,6 +1,6 @@
 [project]
 name = "wembed-core"
-version = "0.1.9"
+version = "0.1.11"
 description = "Add your description here"
 readme = "README.md"
 authors = [
@@ -10,10 +10,10 @@ requires-python = ">=3.13"
 dependencies = [
     "docling>=2.55.1",
     "docling-core>=2.48.4",
-    "llm>=0.27.1",
-    "llm-ollama>=0.14.0",
     "ollama>=0.6.0",
+    "piper-tts>=1.3.0",
     "pydantic>=2.11.9",
+    "sounddevice>=0.5.2",
     "sqlalchemy>=2.0.43",
 ]
 
@@ -142,6 +142,7 @@ module = [
     "docling",
     "llm",
     "psycopg2",
+    "typer"
 ]
 ignore_missing_imports = true
 

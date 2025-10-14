@@ -1,3 +1,9 @@
+"""
+wembed_core/enums.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Enums used throughout the application.
+"""
+
 from enum import Enum
 
 

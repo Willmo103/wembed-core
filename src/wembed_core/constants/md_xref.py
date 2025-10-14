@@ -1,3 +1,9 @@
+"""
+wembed_core/constants/md_xref.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Mapping of file extensions to Markdown syntax highlighting languages.
+"""
+
 MD_XREF = {
     ".feature": "cucumber",
     ".abap": "abap",

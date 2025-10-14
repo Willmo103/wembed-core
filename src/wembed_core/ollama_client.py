@@ -1,3 +1,9 @@
+"""
+wembed_core/ollama_client.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Client wrapper for interacting with the Ollama API.
+"""
+
 from ollama import Client
 
 from .config import AppConfig

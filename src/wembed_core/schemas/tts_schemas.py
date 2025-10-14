@@ -1,3 +1,9 @@
+"""
+ wembed_core/schemas/tts_schemas.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Schemas for Text-to-Speech (TTS) models and user settings.
+"""
+
 from typing import Optional
 
 from pydantic import BaseModel

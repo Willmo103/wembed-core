@@ -1,5 +1,6 @@
-# src/wembed_core/config.py
 """
+ src/wembed_core/config.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Configuration Models for Wembed Core
 """
 

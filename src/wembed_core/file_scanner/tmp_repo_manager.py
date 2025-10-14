@@ -1,3 +1,9 @@
+"""
+wembed_core/file_scanner/tmp_repo_manager.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Manages a temporary clone of a git repository for file scanning.
+"""
+
 import subprocess
 from contextlib import contextmanager
 from pathlib import Path

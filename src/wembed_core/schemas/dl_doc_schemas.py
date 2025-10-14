@@ -1,5 +1,7 @@
 """
 Pydantic schemas for Document and Chunk models.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+These schemas define the structure and validation for deep learning documents and their associated chunks.
 """
 
 from datetime import datetime, timezone
@@ -22,6 +24,7 @@ class DLChunkSchema(BaseModel):
         """
 
         from_attributes = True
+        arbitrary_types_allowed = True
 
 
 class DLDocumentSchema(BaseModel):
@@ -44,6 +47,7 @@ class DLDocumentSchema(BaseModel):
         """
 
         from_attributes = True
+        arbitrary_types_allowed = True
 
 
 class DLInputSchema(BaseModel):
@@ -66,6 +70,7 @@ class DLInputSchema(BaseModel):
         """
 
         from_attributes = True
+        arbitrary_types_allowed = True
 
 
 __all__ = ["DLChunkSchema", "DLDocumentSchema", "DLInputSchema"]

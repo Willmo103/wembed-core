@@ -1,5 +1,7 @@
 """
 wembed_core/controllers/code_chunker_code_chunk_controller.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Controller for CRUD operations on CodeChunkerCodeChunks.
 """
 
 from typing import List, Optional

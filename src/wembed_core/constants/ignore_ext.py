@@ -1,3 +1,9 @@
+"""
+wembed_core/constants/ignore_ext.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+File extensions to ignore during file processing.
+"""
+
 from typing import Set
 
 IGNORE_EXTENSIONS: Set[str] = {

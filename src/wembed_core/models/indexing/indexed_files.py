@@ -1,5 +1,6 @@
 """
 source: wembed_core/models/indexed_files.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 SQLAlchemy model for file records in the 'host_files' table.
 """
 

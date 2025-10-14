@@ -1,5 +1,7 @@
 """
 wembed_core/controllers/indexed_vault_controller.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Controller for CRUD operations on IndexedObsidianVaults.
 """
 
 from typing import List, Optional

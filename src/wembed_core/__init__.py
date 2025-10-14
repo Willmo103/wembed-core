@@ -3,6 +3,9 @@ from . import models  # noqa:F401
 from . import schemas  # noqa:F401
 from .config import *  # noqa:F401, F403
 from .database import *  # noqa:F401, F403
+from .embedding import EmbeddingModelConfig, EmbeddingService  # noqa:F401, F403
+from .file_scanner import *  # noqa:F401, F403
+from .services import *  # noqa:F401, F403
 
 __version__ = "0.1.7"
 __author__ = "Will Morris"

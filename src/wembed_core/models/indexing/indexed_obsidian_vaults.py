@@ -1,3 +1,9 @@
+"""
+ wembed_core/models/indexing/indexed_obsidian_vaults.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ SQLAlchemy model for indexed Obsidian vaults.
+"""
+
 from datetime import datetime
 from typing import List, Optional
 

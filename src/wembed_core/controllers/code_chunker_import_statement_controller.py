@@ -1,5 +1,7 @@
 """
 wembed_core/controllers/code_chunker_import_statement_controller.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Controller for CRUD operations on CodeChunkerImportStatements.
 """
 
 from typing import List

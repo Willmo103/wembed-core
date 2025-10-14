@@ -1,8 +1,12 @@
-from typing import Any, Dict
+"""
+ wembed_core/models/tts.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ SQLAlchemy models for Text-to-Speech (TTS) functionality."""
+
+from typing import Any, Dict, Optional
 
 from sqlalchemy import ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from transformers import Optional
 
 from wembed_core.database import AppBase
 
@@ -42,3 +46,6 @@ class TTSUserSettings(AppBase):
     )
 
     model: Mapped[Optional[TTSModel]] = relationship("TTSModel")
+
+
+__all__ = ["TTSModel", "TTSUserSettings"]

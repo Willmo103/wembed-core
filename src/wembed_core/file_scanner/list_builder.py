@@ -1,3 +1,9 @@
+"""
+wembed_core/file_scanner/list_builder.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Builds lists of files to process based on various criteria.
+"""
+
 import fnmatch
 from enum import Enum
 from pathlib import Path
@@ -43,6 +49,11 @@ class ListBuilderModes(str, Enum):
     REMOTE: str = Field(
         default="remote",
         description="Scan for remote files using a remote file index.",
+        frozen=True,
+    )
+    DOCLING: str = Field(
+        default="docling",
+        description="Scan for Docling files.",
         frozen=True,
     )
 

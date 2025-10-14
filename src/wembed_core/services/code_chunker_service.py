@@ -1,6 +1,6 @@
 """
 wembed_core/services/code_chunker_service.py
-
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Orchestrates the code chunking process for an indexed repository.
 """
 

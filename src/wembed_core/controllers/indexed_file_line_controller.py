@@ -1,5 +1,7 @@
 """
 wembed_core/controllers/indexed_file_line_controller.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Controller for CRUD operations on IndexedFileLines.
 """
 
 from typing import List, Optional

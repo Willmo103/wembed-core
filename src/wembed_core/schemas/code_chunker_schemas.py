@@ -1,3 +1,9 @@
+"""
+wembed_core/schemas/code_chunker_schemas.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Schemas for code chunking and dependency analysis.
+"""
+
 import uuid
 from datetime import datetime
 from typing import List, Optional, Set

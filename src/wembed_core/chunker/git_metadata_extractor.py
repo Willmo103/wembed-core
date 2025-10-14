@@ -25,6 +25,11 @@ class GitMetadataExtractor:
     """Extracts Git metadata for files and repositories"""
 
     def __init__(self, repo_path: str = "."):
+        """
+        Initializes the GitMetadataExtractor with the given repository path.
+        Args:
+            repo_path (str): Path to the Git repository. Defaults to current directory.
+        """
         self.repo_path = os.path.abspath(repo_path)
         self.git_dir = os.path.join(self.repo_path, ".git")
 
@@ -32,7 +37,13 @@ class GitMetadataExtractor:
             raise ValueError(f"Not a git repository: {self.repo_path}")
 
     def _run_git_command(self, command: List[str]) -> str:
-        """Run a git command and return the output"""
+        """
+        Run a git command and return the output
+        Args:
+            command (List[str]): List of git command arguments
+        Returns:
+            str: Output from the git command
+        """
         try:
             result = subprocess.run(
                 ["git"] + command,
@@ -48,7 +59,13 @@ class GitMetadataExtractor:
             return ""
 
     def get_file_info(self, file_path: str) -> Optional[GitFileInfoSchema]:
-        """Get Git metadata for a specific file"""
+        """
+        Get Git metadata for a specific file
+        Args:
+            file_path (str): Path to the file within the repository
+        Returns:
+            Optional[GitFileInfoSchema]: Metadata about the file or None if not found
+        """
         rel_path = os.path.relpath(file_path, self.repo_path)
 
         # Check if file is tracked by git
@@ -120,7 +137,14 @@ class GitMetadataExtractor:
     def get_recent_commits(
         self, limit: int = 50, file_path: Optional[str] = None
     ) -> List[GitCommitSchema]:
-        """Get recent commits, optionally filtered by file"""
+        """
+        Get recent commits, optionally filtered by file
+        Args:
+            limit (int): Number of commits to retrieve
+            file_path (Optional[str]): If provided, filter commits to this file
+        Returns:
+            List[GitCommitSchema]: List of recent commits
+        """
         cmd = [
             "log",
             f"--max-count={limit}",
@@ -176,7 +200,13 @@ class GitMetadataExtractor:
         return commits
 
     def _parse_commit_stats(self, stats: str) -> tuple[int, int]:
-        """Parse git show --stat output to get insertions/deletions"""
+        """
+        Parse git show --stat output to get insertions/deletions
+        Args:
+            stats (str): Output from git show --stat
+        Returns:
+            tuple[int, int]: (insertions, deletions)
+        """
         insertions = 0
         deletions = 0
 
@@ -192,7 +222,11 @@ class GitMetadataExtractor:
         return insertions, deletions
 
     def get_branches(self) -> List[GitBranchSchema]:
-        """Get all branches in the repository"""
+        """
+        Get all branches in the repository
+        Returns:
+            List[GitBranchSchema]: List of branches with metadata
+        """
         branches_output = self._run_git_command(
             [
                 "branch",
@@ -231,7 +265,11 @@ class GitMetadataExtractor:
         return branches
 
     def get_repository_stats(self) -> Dict:
-        """Get overall repository statistics"""
+        """
+        Get overall repository statistics
+        Returns:
+            Dict: Repository statistics including total commits, authors, age, etc.
+        """
         total_commits = self._run_git_command(["rev-list", "--count", "HEAD"])
         total_authors = self._run_git_command(["shortlog", "-sn", "--all"])
 
@@ -264,7 +302,13 @@ class GitMetadataExtractor:
         }
 
     def get_file_blame(self, file_path: str) -> Dict[int, Dict]:
-        """Get blame information for each line in a file"""
+        """
+        Get blame information for each line in a file
+        Args:
+            file_path (str): Path to the file within the repository
+        Returns:
+            Dict[int, Dict]: Mapping of line numbers to blame info (commit, author, date, line)
+        """
         rel_path = os.path.relpath(file_path, self.repo_path)
         blame_output = self._run_git_command(["blame", "--line-porcelain", rel_path])
 

@@ -23,6 +23,11 @@ class DependencyAnalyzer:
     """Analyzes Python dependencies and creates usage graphs"""
 
     def __init__(self, project_root: str):
+        """
+        Initializes the DependencyAnalyzer with the project root directory.
+        Args:
+            project_root (str): Path to the root directory of the Python project.
+        """
         self.project_root = os.path.abspath(project_root)
         self.dependencies: Dict[str, DependencyNode] = {}
         self.imports: List[ImportStatement] = []
@@ -30,7 +35,12 @@ class DependencyAnalyzer:
         self.stdlib_modules = STD_LIB_MODULES
 
     def discover_local_modules(self) -> Set[str]:
-        """Discover all local Python modules in the project"""
+        """
+        Discover all local Python modules in the project.
+
+        Returns:
+            Set[str]: A set of local module names.
+        """
         local_modules = set()
 
         for root, dirs, files in os.walk(self.project_root):
@@ -60,7 +70,13 @@ class DependencyAnalyzer:
         return local_modules
 
     def analyze_file(self, file_path: str) -> List[ImportStatement]:
-        """Analyze imports in a single Python file"""
+        """
+        Analyze imports in a single Python file.
+        Args:
+            file_path (str): Path to the Python file to analyze.
+        Returns:
+            List[ImportStatement]: List of import statements found in the file.
+        """
         try:
             with open(file_path, "r", encoding="utf-8") as f:
                 source = f.read()
@@ -106,7 +122,12 @@ class DependencyAnalyzer:
         return imports
 
     def analyze_project(self) -> Dict[str, DependencyNode]:
-        """Analyze all dependencies in the project"""
+        """
+        Analyze all dependencies in the project.
+        Returns:
+            Dict[str, DependencyNode]: A dictionary of dependency nodes keyed by module name.
+        """
+        # Discover local modules first
         self.discover_local_modules()
 
         # Analyze all Python files
@@ -130,7 +151,12 @@ class DependencyAnalyzer:
         return self.dependencies
 
     def _process_import(self, import_stmt: ImportStatement):
-        """Process a single import statement"""
+        """
+        Process a single import statement.
+        Args:
+            import_stmt (ImportStatement): The import statement to process.
+        Returns: None
+        """
         module = import_stmt.module
 
         # Determine dependency source
@@ -159,7 +185,13 @@ class DependencyAnalyzer:
         self.dependencies[module].is_used = True
 
     def _determine_source(self, module: str) -> str:
-        """Determine if a module is stdlib, local, or external"""
+        """
+        Determine if a module is stdlib, local, or external.
+        Args:
+            module (str): The module name to check.
+        Returns:
+            str: 'stdlib', 'local', or 'external'
+        """
         # Check if it's a local module
         if any(module.startswith(local) for local in self.local_modules):
             return "local"
@@ -173,7 +205,13 @@ class DependencyAnalyzer:
         return "external"
 
     def _get_package_version(self, package_name: str) -> Optional[str]:
-        """Get the version of an installed package using importlib.metadata"""
+        """
+        Get the version of an installed package using importlib.metadata
+        Args:
+            package_name (str): The name of the package to check.
+        Returns:
+            Optional[str]: The version string if found, else None.
+        """
         try:
             # Try the root module name first
             root_module = package_name.split(".")[0]
@@ -186,7 +224,13 @@ class DependencyAnalyzer:
                 return None
 
     def _get_module_file_path(self, module: str) -> Optional[str]:
-        """Get the file path for a local module"""
+        """
+        Get the file path for a local module
+        Args:
+            module (str): The module name to find.
+        Returns:
+            Optional[str]: The file path if found, else None.
+        """
         # Convert module name to file path
         parts = module.split(".")
         potential_paths = [
@@ -201,7 +245,12 @@ class DependencyAnalyzer:
         return None
 
     def _load_requirements(self):
-        """Load dependencies from requirements.txt and similar files"""
+        """
+        Load dependencies from requirements.txt and similar files
+        Looks for common requirement files in the project root and parses them.
+        Args: None
+        Returns: None - adds dependencies to self.dependencies
+        """
         req_files = [
             "requirements.txt",
             "requirements.in",
@@ -220,26 +269,50 @@ class DependencyAnalyzer:
                     self._parse_pyproject_toml(req_path)
 
     def _parse_requirements_txt(self, file_path: str):
-        """Parse requirements.txt file"""
+        """
+        Parse requirements.txt file
+        Args:
+            file_path (str): Path to the requirements.txt file.
+        Returns: None - adds dependencies to self.dependencies
+        """
         # This is a placeholder for actual parsing logic
         pass
 
     def _parse_setup_py(self, file_path: str):
-        """Parse setup.py file"""
+        """
+        Parse setup.py file
+        Args:
+            file_path (str): Path to the setup.py file.
+        Returns: None - adds dependencies to self.dependencies
+        """
         # This is a placeholder for actual parsing logic
         pass
 
     def _parse_pyproject_toml(self, file_path: str):
-        """Parse pyproject.toml file"""
+        """
+        Parse pyproject.toml file
+        Args:
+            file_path (str): Path to the pyproject.toml file.
+        Returns: None - adds dependencies to self.dependencies
+        """
         # This is a placeholder for actual parsing logic
         pass
 
     def get_unused_dependencies(self) -> List[DependencyNode]:
-        """Get a list of dependencies that are loaded but not used"""
+        """
+        Get a list of dependencies that are loaded but not used
+        Returns:
+            List[DependencyNode]: List of unused dependencies.
+        """
         return [dep for dep in self.dependencies.values() if not dep.is_used]
 
     def export_analysis(self, output_path: str):
-        """Export the dependency analysis to a JSON file"""
+        """
+        Export the dependency analysis to a JSON file
+        Args:
+            output_path (str): Path to the output JSON file.
+        Returns: None - writes the analysis to the specified file.
+        """
         export_data = {
             "project_root": self.project_root,
             "dependencies": {name: asdict(d) for name, d in self.dependencies.items()},
@@ -259,7 +332,11 @@ class DependencyAnalyzer:
             print(f"Error exporting dependency analysis: {e}")
 
     def print_summary(self):
-        """Print a summary of the dependency analysis"""
+        """
+        Print a summary of the dependency analysis
+        Args: None
+        Returns: None - prints the summary to stdout.
+        """
         if not self.dependencies:
             print("\nDependency Analysis Summary: No dependencies found.")
             return

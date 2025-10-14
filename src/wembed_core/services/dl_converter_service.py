@@ -9,6 +9,7 @@ from datetime import datetime, timezone
 from typing import Optional
 
 from docling.document_converter import DocumentConverter
+from docling.datamodel.base_models import ConversionStatus
 from docling_core.transforms.chunker.hybrid_chunker import HybridChunker
 from docling_core.transforms.chunker.tokenizer.huggingface import HuggingFaceTokenizer
 from docling_core.types.doc.document import DoclingDocument
@@ -88,17 +89,29 @@ class DLConverterService:
         doc: DoclingDocument
         try:
             if "://" not in source:
-                doc = self._document_converter.convert(source=source).document
+                result = self._document_converter.convert(source=source)
                 if not source_type:
                     source_type = "file"
             else:
-                doc = self._document_converter.convert(
+                result = self._document_converter.convert(
                     source=source, headers=headers
-                ).document
+                )
                 if not source_type:
                     source_type = "url"
         except Exception as e:
             print(f"Error converting document from {source}: {e}")
+            return None
+        while result.status not in {ConversionStatus.SKIPPED, ConversionStatus.FAILED}:
+            continue
+        if result.status == ConversionStatus.FAILED:
+            print(f"Conversion failed for {source}")
+            return None
+        if result.status == ConversionStatus.SKIPPED:
+            print(f"Conversion skipped for {source}")
+            return None
+        doc = result.document
+        if not doc:
+            print(f"No document returned from conversion for {source}")
             return None
         doc_schema = DLDocumentSchema(
             source=source,

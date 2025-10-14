@@ -102,7 +102,7 @@ class AppConfig(BaseModel):
         self.logs_dir = self.app_data / "logs"
 
         # Set sqlalchemy_uri, allowing override from env var only in debug mode
-        if self.debug and "SQLALCHEMY_URI" in env:
+        if "SQLALCHEMY_URI" in env:
             self.sqlalchemy_uri = env["SQLALCHEMY_URI"].replace("\\", "/")
         else:
             db_path = self.app_data / "wembed.db"

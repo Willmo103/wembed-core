@@ -2496,7 +2496,7 @@ wheels = [
 
 [[package]]
 name = "wembed-core"
-version = "0.1.14"
+version = "0.1.15"
 source = { editable = "." }
 dependencies = [
     { name = "docling" },

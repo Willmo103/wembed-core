@@ -44,3 +44,4 @@ class IndexedFileLines(AppBase):
         nullable=False,
         default=lambda: datetime.now(timezone.utc),
     )
+

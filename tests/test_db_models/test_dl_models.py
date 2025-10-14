@@ -10,7 +10,7 @@ import pytest
 
 from wembed_core import AppConfig
 from wembed_core.database import DatabaseService
-from wembed_core.models.dl_doc.dl_chunks import DLChunks
+from wembed_core.models.dl_doc.dl_doc_chunks import DLChunks
 from wembed_core.models.dl_doc.dl_documents import DLDocuments
 from wembed_core.models.dl_doc.dl_inputs import DLInputs
 

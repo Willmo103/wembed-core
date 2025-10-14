@@ -4,7 +4,7 @@
  Initializes the dl_doc models package.
 """
 
-from .dl_chunks import DLChunks
+from .dl_doc_chunks import DLChunks
 from .dl_documents import DLDocuments
 from .dl_inputs import DLInputs
 

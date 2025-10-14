@@ -1,5 +1,5 @@
 """
- wembed_core/models/dl_doc/dl_chunks.py
+ wembed_core/models/dl_doc/dl_doc_chunks.py
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  SQLAlchemy model for document chunks.
 """
@@ -25,11 +25,11 @@ class DLChunks(AppBase):
       created_at (datetime): Timestamp when the chunk was created.
     """
 
-    __tablename__ = "dl_chunks"
+    __tablename__ = "dl_doc_chunks"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     document_id: Mapped[int] = mapped_column(
-        ForeignKey("dl_documents.id"), nullable=False, index=True
+        ForeignKey("dl_doc.id"), nullable=False, index=True
     )
     chunk_index: Mapped[int] = mapped_column(Integer, nullable=False, index=True)
     chunk_text: Mapped[str] = mapped_column(Text, nullable=False, index=True)

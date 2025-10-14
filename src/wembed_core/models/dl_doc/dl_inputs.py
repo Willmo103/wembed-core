@@ -18,9 +18,8 @@ class DLInputs(AppBase):
     SQLAlchemy model for input records.
     Attributes:
       id (int): Unique identifier for the input record.
-      source_ref (str): Unique reference or identifier for the input source.
-      source_type (str): Type of the input source (e.g., 'file', 'url').
-      status (str): Current status of the input (e.g., 'pending', 'processed', 'error').
+      source (str): The path or URL of the input source.
+      channel (str): Name of the processing channel.
       errors (Optional[str]): Any error messages associated with the input.
       added_at (datetime): Timestamp when the input was added.
       processed_at (Optional[datetime]): Timestamp when the input was processed.
@@ -34,7 +33,6 @@ class DLInputs(AppBase):
     source_ref: Mapped[str] = mapped_column(
         String, unique=True, nullable=False, index=True
     )
-    status: Mapped[int] = mapped_column(Integer, nullable=False, default=100)
     errors: Mapped[Optional[List[str]]] = mapped_column(JSON, nullable=True)
     added_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),

@@ -22,13 +22,13 @@ from wembed_core.constants import (
 from .dot_scanignore import DotScanIgnoreFile
 
 
-class ListBuilderModes(str, Enum):
+class ListBuilderModes(Field, Enum):
     """Defines modes for ListBuilder operation."""
 
     FULL: str = Field(
         default="full",
         description="Full scan of the filesystem for all markers."
-        " Uses all configured roots in the ~/wembed/config.json:scan_root_paths section.",
+        "Uses all configured roots in the ~/wembed/config.json:scan_root_paths section.",
         frozen=True,
     )
     REPOSITORY: str = Field(

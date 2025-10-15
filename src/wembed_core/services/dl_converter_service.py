@@ -4,16 +4,11 @@ wembed_core/services/dl_converter_service.py
 Orchestrates the conversion of documents into deep learning-friendly formats and stores them in the database.
 """
 
-from dataclasses import dataclass
-from datetime import datetime, timezone
 from typing import Optional
 
-
 from wembed_core.config import AppConfig
-from wembed_core.constants import HEADERS
 from wembed_core.database import DatabaseService
 from wembed_core.embedding import EmbeddingModelConfig, EmbeddingService
-from wembed_core.models.dl_doc import DLChunks, DLDocuments
 from wembed_core.ollama_client import OllamaClient
 
 
@@ -22,6 +17,7 @@ class DLConverterService:
     Service to convert documents into deep learning-friendly formats and store them in the database.
     This service handles document conversion, chunking, embedding generation, and database storage.
     """
+
     from docling.document_converter import DocumentConverter
     from docling_core.transforms.chunker.hybrid_chunker import HybridChunker
     from docling_core.transforms.chunker.tokenizer.huggingface import (
@@ -43,9 +39,9 @@ class DLConverterService:
         self._embedding_service = EmbeddingService(
             app_config, embedding_model_config or EmbeddingModelConfig()
         )
-        self._document_converter = DocumentConverter()
-        self._chunker = HybridChunker(
-            tokenizer=HuggingFaceTokenizer.from_pretrained(
+        self._document_converter = "DocumentConverter"()
+        self._chunker = "HybridChunker"(
+            tokenizer="HuggingFaceTokenizer.from_pretrained"(
                 model_name=self._embedding_model_config.hf_model_id,
                 max_length=self._embedding_model_config.max_tokens,
             ),

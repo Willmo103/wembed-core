@@ -22,40 +22,15 @@ from wembed_core.constants import (
 from .dot_scanignore import DotScanIgnoreFile
 
 
-class ListBuilderModes(Field, Enum):
+class ListBuilderModes(str, Enum):
     """Defines modes for ListBuilder operation."""
 
-    FULL: str = Field(
-        default="full",
-        description="Full scan of the filesystem for all markers."
-        "Uses all configured roots in the ~/wembed/config.json:scan_root_paths section.",
-        frozen=True,
-    )
-    REPOSITORY: str = Field(
-        default="repo",
-        description="Scan for multiple repository folders for repository indexing.",
-        frozen=True,
-    )
-    OBSIDIAN: str = Field(
-        default="obsidian",
-        description="Scan for multiple Obsidian vault folders for Obsidian indexing.",
-        frozen=True,
-    )
-    PROJECT: str = Field(
-        default="project",
-        description="Scan inside of a project folder using git ls-files to find files as the default ignoring configuration.",
-        frozen=True,
-    )
-    REMOTE: str = Field(
-        default="remote",
-        description="Scan for remote files using a remote file index.",
-        frozen=True,
-    )
-    DOCLING: str = Field(
-        default="docling",
-        description="Scan for Docling files.",
-        frozen=True,
-    )
+    FULL: str = "full"
+    REPOSITORY: str = "repo"
+    OBSIDIAN: str = "obsidian"
+    PROJECT: str = "project"
+    REMOTE: str = "remote"
+    DOCLING: str = "docling"
 
 
 class ListBuilderOptions(BaseModel):

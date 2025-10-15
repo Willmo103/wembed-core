@@ -1,27 +1,21 @@
 """
-source: wembed_core/models/indexed_files.py
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-SQLAlchemy model for file records in the 'host_files' table.
+source: src/wembed_core/models/indexing/indexed_structured.py
+~~~~~~~~~~~~~~~~~~~~~
+SQLAlchemy model for structured data indexing.
 """
 
 from datetime import datetime
 from typing import Optional
 
-from sqlalchemy import (
-    DateTime,
-    Integer,
-    LargeBinary,
-    String,
-    Text,
-)
+from sqlalchemy import DateTime, Integer, LargeBinary, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from wembed_core.database import AppBase
 
 
-class IndexedFiles(AppBase):
+class IndexedStructured(AppBase):
     """
-    SQLAlchemy model for the 'indexed_files' table, representing file records.
+    Represents structured data in the database.
 
     Attributes:
         id (str): Unique identifier for the file (primary key).
@@ -35,16 +29,18 @@ class IndexedFiles(AppBase):
         md5 (str): MD5 hash of the file content.
         size (int): Size of the file in bytes.
         content (bytes, optional): Binary content of the file.
-        content_text (str): Text content of the file.
         ctime_iso (datetime): Creation time of the file in ISO format.
         mtime_iso (datetime): Last modification time of the file in ISO format.
         uri (str): URI of the file.
         mimetype (str): MIME type of the file.
         created_at (datetime): Timestamp when the record was created.
         updated_at (datetime): Timestamp when the record was last updated.
+        index_mapping (str): JSON string representing the index mapping.
+        index_settings (str): JSON string representing the index settings.
+        exporter_script (str): Script used for exporting the structured data.
     """
 
-    __tablename__ = "indexed_files"
+    __tablename__ = "indexed_structured"
 
     id: Mapped[str] = mapped_column(String, primary_key=True)
     version: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
@@ -57,14 +53,16 @@ class IndexedFiles(AppBase):
     md5: Mapped[str] = mapped_column(String, nullable=False)
     size: Mapped[int] = mapped_column(Integer, nullable=False)
     content: Mapped[Optional[bytes]] = mapped_column(LargeBinary, nullable=True)
-    content_text: Mapped[str] = mapped_column(Text, nullable=False)
-    ctime_iso: Mapped[datetime] = mapped_column(DateTime, nullable=False)
-    mtime_iso: Mapped[datetime] = mapped_column(DateTime, nullable=False)
+    ctime_iso: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    mtime_iso: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     uri: Mapped[str] = mapped_column(String, nullable=False)
     mimetype: Mapped[str] = mapped_column(String, nullable=False)
     created_at: Mapped[datetime] = mapped_column(
-        DateTime, nullable=False, default="now()"
+        DateTime(timezone=True), nullable=False
     )
     updated_at: Mapped[datetime] = mapped_column(
-        DateTime, nullable=False, default="now()", onupdate="now()"
+        DateTime(timezone=True), nullable=False
     )
+    index_mapping: Mapped[str] = mapped_column(String, nullable=True)
+    index_settings: Mapped[str] = mapped_column(String, nullable=True)
+    exporter_script: Mapped[str] = mapped_column(String, nullable=True)

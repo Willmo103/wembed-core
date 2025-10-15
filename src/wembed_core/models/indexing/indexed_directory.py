@@ -1,7 +1,7 @@
 """
- wembed_core/models/indexing/indexed_repos.py
+ wembed_core/models/indexing/directory.py
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- SQLAlchemy model for code repositories."""
+ SQLAlchemy model for code directories."""
 
 from datetime import datetime
 from typing import List, Optional
@@ -12,13 +12,13 @@ from sqlalchemy.orm import Mapped, mapped_column
 from wembed_core.database import AppBase
 
 
-class IndexedRepos(AppBase):
+class IndexedDirectory(AppBase):
     """
-    Represents a code repository in the database.
+    Represents a code directory in the database.
 
     Attributes:
         id (int) NOT NULL: Primary key.
-        repo_name (str) NOT NULL: Name of the repository.
+        dir_type (str) NOT NULL: Name of the repository.
         host (str): Host where the repository was indexed
         root_path (str): Root path of the repository.
         files (List[str], optional): List of file paths in the repository.
@@ -29,10 +29,10 @@ class IndexedRepos(AppBase):
     __tablename__ = "indexed_repos"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    repo_name: Mapped[str] = mapped_column(String, nullable=False)
-    host: Mapped[str] = mapped_column(String, nullable=False)
+    dir_type: Mapped[Optional[str]] = mapped_column(String, nullable=True)
+    host: Mapped[Optional[str]] = mapped_column(String, nullable=True)
     root_path: Mapped[str] = mapped_column(String, nullable=False)
-    files: Mapped[Optional[List[str]]] = mapped_column(JSON, nullable=True)
+    files: Mapped[Optional[List[str]]] = mapped_column(JSON, nullable=True, default=[])
     file_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     indexed_at: Mapped[Optional[datetime]] = mapped_column(
         DateTime(timezone=True), nullable=True
